@@ -1,81 +1,85 @@
-import { useState } from 'react'
-import { PhoneLogin } from './components/PhoneLogin'
-import { OtpVerification } from './components/OtpVerification'
-import { Icons } from './components/ui/icons'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import PhoneLogin from './components/PhoneLogin';
+import OtpVerification from './components/OtpVerification';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline'; // Resets browser default styles
+import { Box, Typography } from '@mui/material'; // Import Box and Typography for the Dashboard component
+
+// Define a basic Material 3 dark theme
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#BB86FC', // Example Material 3 dark primary color
+    },
+    secondary: {
+      main: '#03DAC6', // Example Material 3 dark secondary color
+    },
+    background: {
+      default: '#121212', // Dark background
+      paper: '#1E1E1E', // Darker surface for cards, etc.
+    },
+    text: {
+      primary: '#FFFFFF',
+      secondary: '#B0B0B0',
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif', // Default MUI font
+    // If you want to use JetBrains Mono, ensure it's imported globally (e.g., in index.html or index.css)
+    // and then uncomment the line below:
+    // fontFamily: ['"JetBrains Mono"', 'Roboto', 'sans-serif'].join(','),
+  },
+  components: {
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: '16px', // Example: More rounded corners for cards
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '16px', // Example: More rounded corners for buttons
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: '12px', // Example: More rounded corners for text fields
+          },
+        },
+      },
+    },
+  },
+});
+
+const Dashboard = () => (
+  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary', fontSize: '2rem' }}>
+    <Typography variant="h4" component="h1" sx={{ color: 'text.primary' }}>
+      Welcome to your Dashboard!
+    </Typography>
+  </Box>
+);
 
 function App() {
-  const [step, setStep] = useState('phone') // 'phone' | 'otp' | 'home'
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-
-  // MOCK API CALLS
-  const handlePhoneContinue = async (number) => {
-    setIsLoading(true)
-    console.log('API CALL: Sending OTP to', number)
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    setPhoneNumber(number)
-    setStep('otp')
-    setIsLoading(false)
-  }
-
-  const handleOtpVerify = async (otp) => {
-    setIsLoading(true)
-    console.log('API CALL: Verifying OTP', otp, 'for', phoneNumber)
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    setStep('home')
-    setIsLoading(false)
-  }
-
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-background selection:bg-primary/30">
-      {/* Background decoration */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]" />
-      </div>
-
-      <div className="w-full max-w-sm relative z-10">
-        {step === 'phone' && (
-          <PhoneLogin onContinue={handlePhoneContinue} isLoading={isLoading} />
-        )}
-        
-        {step === 'otp' && (
-          <OtpVerification 
-            phoneNumber={phoneNumber} 
-            onBack={() => setStep('phone')} 
-            onVerify={handleOtpVerify} 
-            isLoading={isLoading}
-          />
-        )}
-
-        {step === 'home' && (
-          <div className="modern-card text-center animate-in fade-in zoom-in-95 duration-500">
-            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Icons.Check className="w-10 h-10 text-primary" strokeWidth={2.5} />
-            </div>
-            <h1 className="text-3xl font-bold gradient-text">Success!</h1>
-            <p className="mt-3 text-muted-foreground">
-              Logged in as <span className="text-white font-medium">+91 {phoneNumber}</span>
-            </p>
-            <div className="mt-10 pt-6 border-t border-white/5">
-              <button 
-                onClick={() => setStep('phone')}
-                className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-              >
-                Sign out
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  )
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline /> {/* Apply a baseline CSS reset */}
+      <Router>
+        <Routes>
+          <Route path="/phone-login" element={<PhoneLogin />} />
+          <Route path="/otp-verification" element={<OtpVerification />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<PhoneLogin />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;

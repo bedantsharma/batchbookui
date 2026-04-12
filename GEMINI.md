@@ -1,79 +1,87 @@
-# BatchbookUI Design System
+# BatchbookUI Design System - Material 3
 
-This document outlines the design philosophy, color scheme, typography, and component styles for the BatchbookUI project. The goal is to create a modern, simple, and consistent user experience.
+This document outlines the design philosophy, color scheme, typography, and component styles for the BatchbookUI project, adopting Google's Material 3 design system. The goal is to create a modern, adaptive, and consistent user experience with a focus on user-centric design.
 
-## Design Philosophy: Focused Clarity
+## Design Philosophy: Material You (Material 3)
 
-Our design philosophy, "Focused Clarity," prioritizes ease of use and a clear, uncluttered interface. We aim to guide the user through the login process with minimal friction.
+Our design philosophy is rooted in Material You, emphasizing personalization, expressiveness, and adaptability. We aim to create an intuitive and delightful user experience by leveraging Material 3's principles.
 
--   **Minimalism:** We use a minimal color palette and simple, geometric shapes to keep the focus on the task at hand.
--   **Clarity:** Visual hierarchy is important. Key actions and information are given prominence through color, size, and placement.
--   **Feedback:** The UI provides clear feedback for user interactions, including loading states, validation errors, and success messages.
--   **Modern Aesthetic:** We embrace modern design trends like dark mode, subtle gradients, and soft shadows to create a visually appealing experience.
+-   **Personalization:** Embrace dynamic color to allow users to personalize their experience.
+-   **Expressiveness:** Utilize larger, more expressive typography and fluid motion to convey meaning and hierarchy.
+-   **Adaptability:** Design for various screen sizes and input methods, ensuring a consistent experience across devices.
+-   **Human-centered:** Prioritize accessibility and usability, making the interface easy and enjoyable for everyone.
+-   **Clarity & Feedback:** Provide clear visual hierarchy and immediate feedback for user interactions, including loading states, validation errors, and success messages.
 
 ## Color Scheme
 
-We use the Oklch color space for a consistent and perceptually uniform color palette. The palette is designed for a dark theme.
+We will leverage Material 3's dynamic color system, which generates tonal palettes from a seed color. For a dark theme, the following conceptual colors will be used, derived from a primary seed.
 
-### Primary Colors
--   `--background`: `oklch(0.08 0 0)` - The darkest background color.
--   `--foreground`: `oklch(0.985 0 0)` - The primary text color.
--   `--card`: `oklch(0.12 0 0)` - The background color for card elements.
--   `--primary`: `oklch(0.7 0.15 250)` - The main accent color for interactive elements.
--   `--primary-foreground`: `oklch(1 0 0)` - Text color for elements with a primary background.
-
-### Secondary & Muted Colors
--   `--secondary`: `oklch(0.2 0 0)` - A secondary background color.
--   `--muted-foreground`: `oklch(0.6 0 0)` - For less important text.
-
-### Semantic Colors
--   `--destructive`: `oklch(0.6 0.25 27)` - For error states and destructive actions.
--   `--success`: `oklch(0.7 0.2 150)` - For success states. (New)
--   `--warning`: `oklch(0.8 0.2 85)` - For warnings. (New)
--   `--info`: `oklch(0.8 0.15 230)` - For informational messages. (New)
-
-### UI Element Colors
--   `--border`: `oklch(0.2 0 0)` - For borders.
--   `--input`: `oklch(0.2 0 0)` - For input backgrounds.
--   `--ring`: `oklch(0.7 0.15 250 / 0.5)` - For focus rings.
+### Core Tonal Palettes (Conceptual for Dark Theme)
+-   **Primary:** The main accent color for interactive elements and key branding.
+    -   `--md-sys-color-primary`: Derived from seed, used for active states, primary actions.
+    -   `--md-sys-color-on-primary`: Text/icon color on primary.
+    -   `--md-sys-color-primary-container`: A lighter primary variant for containers.
+    -   `--md-sys-color-on-primary-container`: Text/icon color on primary container.
+-   **Secondary:** Used for less prominent interactive elements and to complement the primary color.
+    -   `--md-sys-color-secondary`: Derived from seed.
+    -   `--md-sys-color-on-secondary`: Text/icon color on secondary.
+    -   `--md-sys-color-secondary-container`: A lighter secondary variant.
+    -   `--md-sys-color-on-secondary-container`: Text/icon color on secondary container.
+-   **Tertiary:** Used for contrasting accents that can highlight elements or provide a different visual emphasis.
+    -   `--md-sys-color-tertiary`: Derived from seed.
+    -   `--md-sys-color-on-tertiary`: Text/icon color on tertiary.
+    -   `--md-sys-color-tertiary-container`: A lighter tertiary variant.
+    -   `--md-sys-color-on-tertiary-container`: Text/icon color on tertiary container.
+-   **Error:** For error states and destructive actions.
+    -   `--md-sys-color-error`: Standard error color.
+    -   `--md-sys-color-on-error`: Text/icon color on error.
+    -   `--md-sys-color-error-container`: A lighter error variant.
+    -   `--md-sys-color-on-error-container`: Text/icon color on error container.
+-   **Neutral & Neutral Variant:** For backgrounds, surfaces, and text.
+    -   `--md-sys-color-background`: The darkest background color.
+    -   `--md-sys-color-on-background`: Primary text color on background.
+    -   `--md-sys-color-surface`: Background for card-like elements, slightly lighter than background.
+    -   `--md-sys-color-on-surface`: Primary text color on surface.
+    -   `--md-sys-color-surface-variant`: Used for less prominent elements, like input fields or dividers.
+    -   `--md-sys-color-on-surface-variant`: Text/icon color on surface variant (muted).
+    -   `--md-sys-color-outline`: For borders and dividers.
 
 ## Typography
 
-We use the `Geist Variable` font for all text. The typographic scale is designed to create a clear visual hierarchy.
+Material 3 uses a comprehensive type scale designed for readability and hierarchy. We will primarily use the Roboto font (or a custom font if specified) and apply the Material 3 type scale.
 
--   **h1 (Page Title):** `3xl` (36px), `font-bold`, `tracking-tight`. Often uses `gradient-text`.
--   **h2 (Card Title):** `2xl` (24px), `font-bold`.
--   **Body Text:** `base` (16px), `text-muted-foreground`.
--   **Input Text:** `lg` (18px).
--   **Button Text:** `base` (16px), `font-semibold`.
--   **Labels:** `sm` (14px), `font-medium`, `text-white/70`.
--   **Small Text/Captions:** `xs` (12px), `text-muted-foreground`.
+-   **Display:** Large, short, and expressive text.
+-   **Headline:** Important text, slightly smaller than display.
+-   **Title:** Medium-sized headlines.
+-   **Body:** Standard paragraph text.
+-   **Label:** Small, utilitarian text, often used for captions or button text.
 
 ## Component Design
 
-Components should be built with reusability and consistency in mind.
+Components will adhere to Material 3 specifications for shape, elevation, and states.
 
-### Cards (`.modern-card`)
+### Cards (`<Card />` from MUI)
 
--   **Appearance:** A glass-like card with a subtle background gradient and a 1px border.
--   **Border:** `1px solid rgba(255, 255, 255, 0.1)`
--   **Border Radius:** `var(--radius-2xl)` (1.5rem)
--   **Padding:** `2rem`
--   **Box Shadow:** `0 25px 50px -12px rgba(0, 0, 0, 0.5)`
+-   **Appearance:** Material 3 cards offer various elevation levels, providing depth and visual separation. They will have defined border radii and subtle shadows.
+-   **Elevation:** Will use Material 3's elevation system for depth.
+-   **Shape:** Default rounded corners, customizable.
+-   **Padding:** Consistent internal padding.
 
-### Buttons
+### Buttons (`<Button />` from MUI)
 
--   **Primary Button:** Uses the `--primary` color. Has a subtle scale transition on hover and press.
--   **Secondary/Link Button:** Plain text with a color change on hover. Used for less prominent actions like "Resend OTP" or "Sign out".
--   **Loading State:** The button should display a spinner and a relevant message, and be disabled.
+-   **Types:** Utilize Material 3 button types: Elevated, Filled, Tonal, Outlined, Text, and Icon buttons.
+-   **Primary Button:** Typically a Filled button using the primary color.
+-   **Secondary/Link Button:** Text or Outlined buttons for less prominent actions.
+-   **Loading State:** Buttons will integrate loading indicators and be disabled during asynchronous operations.
 
-### Input Fields
+### Input Fields (`<TextField />` from MUI)
 
--   **General:** Dark background (`bg-white/5`), light border (`border-white/10`), and larger text for readability.
--   **Focus State:** The border color should change to the primary color (`focus:border-primary/50`) and the background should become slightly lighter (`focus:bg-white/10`).
--   **Validation:** Invalid fields should have a destructive border color.
+-   **General:** Material 3 text fields (Filled or Outlined) provide clear visual cues for states (active, inactive, error).
+-   **Focus State:** Clear highlight using primary color.
+-   **Validation:** Error states will be clearly indicated with destructive colors and helper text.
+-   **Labeling:** Floating labels for better usability.
 
 ### Icons
 
--   Use icons from the `lucide-react` library to maintain a consistent, clean style.
--   Icons should be used sparingly to support content, not as decoration.
+-   Use icons from `@mui/icons-material` to maintain a consistent, clean, and Material 3-aligned style.
+-   Icons should be used to support content and enhance usability.
