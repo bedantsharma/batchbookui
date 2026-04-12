@@ -1,120 +1,80 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { PhoneLogin } from './components/PhoneLogin'
+import { OtpVerification } from './components/OtpVerification'
+import { Icons } from './components/ui/icons'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [step, setStep] = useState('phone') // 'phone' | 'otp' | 'home'
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  // MOCK API CALLS
+  const handlePhoneContinue = async (number) => {
+    setIsLoading(true)
+    console.log('API CALL: Sending OTP to', number)
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    setPhoneNumber(number)
+    setStep('otp')
+    setIsLoading(false)
+  }
+
+  const handleOtpVerify = async (otp) => {
+    setIsLoading(true)
+    console.log('API CALL: Verifying OTP', otp, 'for', phoneNumber)
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    setStep('home')
+    setIsLoading(false)
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="flex items-center justify-center min-h-screen p-4 bg-background selection:bg-primary/30">
+      {/* Background decoration */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]" />
+      </div>
 
-      <div className="ticks"></div>
+      <div className="w-full max-w-sm relative z-10">
+        {step === 'phone' && (
+          <PhoneLogin onContinue={handlePhoneContinue} isLoading={isLoading} />
+        )}
+        
+        {step === 'otp' && (
+          <OtpVerification 
+            phoneNumber={phoneNumber} 
+            onBack={() => setStep('phone')} 
+            onVerify={handleOtpVerify} 
+            isLoading={isLoading}
+          />
+        )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        {step === 'home' && (
+          <div className="modern-card text-center animate-in fade-in zoom-in-95 duration-500">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Icons.Check className="w-10 h-10 text-primary" strokeWidth={2.5} />
+            </div>
+            <h1 className="text-3xl font-bold gradient-text">Success!</h1>
+            <p className="mt-3 text-muted-foreground">
+              Logged in as <span className="text-white font-medium">+91 {phoneNumber}</span>
+            </p>
+            <div className="mt-10 pt-6 border-t border-white/5">
+              <button 
+                onClick={() => setStep('phone')}
+                className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
