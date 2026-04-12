@@ -3,13 +3,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
-  CardContent,
   Typography,
   TextField,
   Button,
   CircularProgress,
   Stack,
 } from '@mui/material';
+import { auth } from '../firebaseconfig'; // Import auth instance
+import { signInWithPhoneNumber } from 'firebase/auth';
 
 const OtpVerification = () => {
   const [otp, setOtp] = useState('');
@@ -26,6 +27,7 @@ const OtpVerification = () => {
 
   useEffect(() => {
     if (!phoneNumber) {
+      // If phone number is not available, redirect to phone login
       navigate('/phone-login');
     }
 
@@ -73,22 +75,16 @@ const OtpVerification = () => {
 
     setIsLoading(true);
     try {
-      console.log(`Verifying OTP: ${otp} for phone: ${phoneNumber}`);
-      // Simulate API call to verify OTP
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (otp === '123456') { // Example valid OTP
-            resolve();
-          } else {
-            reject(new Error('Invalid OTP'));
-          }
-        }, 2000);
-      });
-
-      navigate('/dashboard');
+      if (window.confirmationResult) {
+        await window.confirmationResult.confirm(otp);
+        // User signed in successfully.
+        navigate('/dashboard'); // Redirect to dashboard or home page
+      } else {
+        setError('Confirmation result not found. Please try sending OTP again.');
+      }
     } catch (err) {
-      setError(err.message || 'Failed to verify OTP. Please try again.');
       console.error('OTP verification error:', err);
+      setError('Failed to verify OTP. Please check the OTP and try again. ' + err.message);
     } finally {
       setIsLoading(false);
     }
@@ -100,12 +96,16 @@ const OtpVerification = () => {
     setResendTimer(60); // Reset timer
 
     try {
-      console.log(`Resending OTP to: ${phoneNumber}`);
-      // Simulate API call to resend OTP
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      // Optionally, show a success message for resend
+      if (window.recaptchaVerifier && phoneNumber) {
+        const appVerifier = window.recaptchaVerifier;
+        const newConfirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+        window.confirmationResult = newConfirmationResult;
+        // Optionally, show a success message for resend
+      } else {
+        setError('Could not resend OTP. Please go back and try again.');
+      }
     } catch (err) {
-      setError('Failed to resend OTP. Please try again.');
+      setError('Failed to resend OTP. Please try again. ' + err.message);
       console.error('OTP resend error:', err);
     } finally {
       // Timer will handle setting isResending to false

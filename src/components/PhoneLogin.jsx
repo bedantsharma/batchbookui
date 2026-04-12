@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
-  CardContent,
   Typography,
   TextField,
   Button,
   CircularProgress,
   InputAdornment,
 } from '@mui/material';
-import PhoneIcon from '@mui/icons-material/Phone'; // Using Material Icons for consistency
+import PhoneIcon from '@mui/icons-material/Phone';
+import { auth } from '../firebaseconfig'; // Import auth instance
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 
 const PhoneLogin = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -18,9 +19,27 @@ const PhoneLogin = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Initialize reCAPTCHA verifier when the component mounts
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+        'callback': (response) => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+          // This callback is usually not triggered for invisible reCAPTCHA unless there's a challenge.
+        },
+        'expired-callback': () => {
+          // Response expired. Ask user to solve reCAPTCHA again.
+          window.recaptchaVerifier.render().then(function(widgetId) {
+            grecaptcha.reset(widgetId);
+          });
+        }
+      });
+    }
+  }, []);
+
   const handlePhoneChange = (e) => {
     const value = e.target.value;
-    // Allow only digits and limit to 10 characters for Indian phone numbers
     const cleanedValue = value.replace(/\D/g, '').substring(0, 10);
     setPhoneNumber(cleanedValue);
     if (error && cleanedValue.length === 10) {
@@ -39,15 +58,17 @@ const PhoneLogin = () => {
 
     setIsLoading(true);
     try {
-      console.log(`Sending OTP to: ${phoneNumber}`);
-      // Simulate API call to send OTP
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate network delay
+      const fullPhoneNumber = `+91${phoneNumber}`; // Assuming Indian phone numbers
+      console.log(`Sending OTP to: ${fullPhoneNumber}`);
 
-      // On success, navigate to OTP verification page
-      navigate('/otp-verification', { state: { phoneNumber } });
+      const appVerifier = window.recaptchaVerifier;
+      const confirmationResult = await signInWithPhoneNumber(auth, fullPhoneNumber, appVerifier);
+      window.confirmationResult = confirmationResult; // Store confirmationResult globally or in state/context
+
+      navigate('/otp-verification', { state: { phoneNumber: fullPhoneNumber } });
     } catch (err) {
-      setError('Failed to send OTP. Please try again.');
       console.error('OTP send error:', err);
+      setError('Failed to send OTP. Please check your number and try again. ' + err.message);
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +81,7 @@ const PhoneLogin = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        bgcolor: 'background.default', // Uses theme background color
+        bgcolor: 'background.default',
         p: 2,
       }}
     >
@@ -70,9 +91,9 @@ const PhoneLogin = () => {
           maxWidth: 400,
           p: 4,
           textAlign: 'center',
-          borderRadius: 4, // Material 3 default rounded corners
-          boxShadow: 3, // Material 3 elevation
-          bgcolor: 'background.paper', // Card background
+          borderRadius: 4,
+          boxShadow: 3,
+          bgcolor: 'background.paper',
         }}
       >
         <Typography variant="h5" component="h1" gutterBottom sx={{ color: 'text.primary', fontWeight: 'bold' }}>
@@ -86,7 +107,7 @@ const PhoneLogin = () => {
           <TextField
             id="phoneNumber"
             label="Phone Number"
-            variant="outlined" // Material 3 prefers outlined or filled
+            variant="outlined"
             fullWidth
             type="tel"
             placeholder="e.g., 9876543210"
@@ -96,7 +117,7 @@ const PhoneLogin = () => {
             error={!!error}
             helperText={error}
             disabled={isLoading}
-            size="medium" // Larger input field
+            size="medium"
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -108,12 +129,12 @@ const PhoneLogin = () => {
 
           <Button
             type="submit"
-            variant="contained" // Primary button style
+            variant="contained"
             color="primary"
             fullWidth
-            size="large" // Larger button
+            size="large"
             disabled={isLoading}
-            sx={{ mt: 2, py: 1.5, borderRadius: 2 }} // Custom padding and border-radius
+            sx={{ mt: 2, py: 1.5, borderRadius: 2 }}
           >
             {isLoading ? (
               <CircularProgress size={24} color="inherit" />
@@ -122,6 +143,8 @@ const PhoneLogin = () => {
             )}
           </Button>
         </Box>
+        {/* This div is required for reCAPTCHA */}
+        <div id="recaptcha-container" style={{ marginTop: '20px' }}></div>
       </Card>
     </Box>
   );
