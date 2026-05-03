@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--color-background); font-family: var(--font-sans); padding: 20px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swatch { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .chip { width: 72px; height: 48px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); }
+  .label { font-size: 10px; color: var(--fg2); text-align: center; line-height: 1.3; }
+  .val { font-size: 9px; color: var(--fg3); font-family: var(--font-mono); }
+  .section-title { font-size: 11px; font-weight: 600; color: var(--fg2); letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 10px; }
+</style>
+</head><body>
+<div class="section-title">Surfaces & Backgrounds</div>
+<div class="row">
+  <div class="swatch"><div class="chip" style="background:#121212; outline:2px solid rgba(255,255,255,0.2); outline-offset:2px;"></div><div class="label" style="color:#BB86FC;font-weight:700;">BG ★</div><div class="val">#121212</div></div>
+  <div class="swatch"><div class="chip" style="background:#1E1E1E"></div><div class="label">Surface</div><div class="val">#1E1E1E</div></div>
+  <div class="swatch"><div class="chip" style="background:#252525"></div><div class="label">Surface 2</div><div class="val">#252525</div></div>
+  <div class="swatch"><div class="chip" style="background:#2C2C2C"></div><div class="label">Surface Var</div><div class="val">#2C2C2C</div></div>
+  <div class="swatch"><div class="chip" style="background:#2E2E2E"></div><div class="label">Surface 3</div><div class="val">#2E2E2E</div></div>
+  <div class="swatch"><div class="chip" style="background:rgba(255,255,255,0.12)"></div><div class="label">Outline</div><div class="val">12% white</div></div>
+  <div class="swatch"><div class="chip" style="background:rgba(0,0,0,0.6)"></div><div class="label">Scrim</div><div class="val">60% black</div></div>
+</div>
+<div style="margin-top:16px;" class="section-title">Text</div>
+<div class="row">
+  <div class="swatch"><div class="chip" style="background:#FFFFFF"></div><div class="label">Text Pri</div><div class="val">#FFFFFF</div></div>
+  <div class="swatch"><div class="chip" style="background:#B0B0B0"></div><div class="label">Text Sec</div><div class="val">#B0B0B0</div></div>
+  <div class="swatch"><div class="chip" style="background:rgba(255,255,255,0.38)"></div><div class="label">Disabled</div><div class="val">38% white</div></div>
+</div>
+</body></html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BatchBook UI Kit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body { background: #121212; font-family: 'DM Sans', system-ui, sans-serif; color: #fff; }
+    @keyframes bb-spin { to { transform: rotate(360deg); } }
+
+    .stage {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 40px 20px; gap: 48px; flex-wrap: wrap;
+    }
+    .info-panel { width: 260px; flex-shrink: 0; }
+    .info-title { font-size: 26px; font-weight: 700; color: #fff; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; }
+    .info-subtitle { font-size: 13px; color: #B0B0B0; margin: 0 0 24px; line-height: 1.5; }
+    .section-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; margin-top: 18px; }
+    .screen-btn {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04); color: #B0B0B0; cursor: pointer;
+      font-family: 'DM Sans', system-ui, sans-serif; font-size: 13px; font-weight: 500;
+      transition: all 0.15s; text-align: left; width: 100%; margin-bottom: 6px;
+    }
+    .screen-btn:hover { background: rgba(187,134,252,0.08); border-color: rgba(187,134,252,0.3); color: #BB86FC; }
+    .screen-btn.active { background: rgba(187,134,252,0.12); border-color: #BB86FC; color: #BB86FC; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .screen-btn.active .dot { background: #BB86FC; }
+    .screen-btn:not(.active) .dot { background: rgba(255,255,255,0.2); }
+    .kit-note { margin-top: 20px; font-size: 11px; color: rgba(255,255,255,0.25); line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; }
+    .kit-note code { font-family: 'JetBrains Mono', monospace; color: rgba(187,134,252,0.6); font-size: 10px; }
+
+    .device-frame {
+      width: 390px; min-height: 820px; border-radius: 44px; overflow: hidden;
+      border: 8px solid #2a2a2a;
+      box-shadow: 0 0 0 1px #3a3a3a, 0 32px 80px rgba(0,0,0,0.8), 0 0 40px rgba(134,59,255,0.15);
+      position: relative; background: #121212; flex-shrink: 0;
+    }
+    .device-notch {
+      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+      width: 110px; height: 26px; background: #2a2a2a; border-radius: 18px; z-index: 10; pointer-events: none;
+    }
+    .device-screen { width: 100%; height: 820px; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+    .device-screen::-webkit-scrollbar { display: none; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="stage">
+  <div class="info-panel">
+    <div class="info-title">
+      <!-- inline logo SVG -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="27" viewBox="0 0 48 46" fill="none">
+        <path fill="#863bff" d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z"/>
+      </svg>
+      BatchBook
+    </div>
+    <p class="info-subtitle">UI Kit · Interactive prototype of the phone-auth flow and main dashboard.</p>
+    <div class="section-label">Screens</div>
+    <div id="screen-nav"></div>
+    <div class="kit-note">
+      Built from <code>bedantsharma/batchbookui</code><br>
+      Material 3 dark theme · React + MUI stack<br><br>
+      Navigate screens via buttons above or interact with the prototype directly.
+    </div>
+  </div>
+
+  <div class="device-frame">
+    <div class="device-notch"></div>
+    <div class="device-screen" id="app-root"></div>
+  </div>
+</div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ── Theme ─────────────────────────────────── */
+const T = {
+  bg:      '#121212',
+  surface: '#1E1E1E',
+  surfVar: '#2C2C2C',
+  primary: '#BB86FC',
+  primaryVivid: '#863bff',
+  primaryCont: '#3700B3',
+  secondary: '#03DAC6',
+  error:   '#CF6679',
+  success: '#4CAF50',
+  fg1:     '#FFFFFF',
+  fg2:     '#B0B0B0',
+  fg3:     'rgba(255,255,255,0.38)',
+  outline: 'rgba(255,255,255,0.12)',
+  sans:    "'DM Sans', system-ui, sans-serif",
+  mono:    "'JetBrains Mono', monospace",
+  rSm:     '8px',
+  rMd:     '12px',
+  rLg:     '16px',
+  rFull:   '9999px',
+  shadowCard: '0 10px 20px rgba(0,0,0,.5), 0 3px 6px rgba(0,0,0,.6)',
+  shadowPrimary: '0 0 0 3px rgba(187,134,252,.3)',
+  shadowGlow: '0 0 16px rgba(134,59,255,.4)',
+};
+
+/* ── Shared primitives ───────────────────────*/
+function Spinner({ color = '#000' }) {
+  return (
+    <div style={{
+      width: 16, height: 16, flexShrink: 0,
+      border: `2px solid rgba(0,0,0,.2)`,
+      borderTopColor: color,
+      borderRadius: '50%',
+      animation: 'bb-spin .7s linear infinite',
+    }} />
+  );
+}
+
+function LogoMark({ size = 36 }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size * 46/48} viewBox="0 0 48 46" fill="none">
+      <path fill="#863bff" d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z"/>
+    </svg>
+  );
+}
+
+/* ── Phone Login ─────────────────────────────*/
+function PhoneLoginScreen({ onSubmit }) {
+  const [phone, setPhone] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const v = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setPhone(v);
+    if (error && v.length === 10) setError('');
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (phone.length !== 10) { setError('Please enter a valid 10-digit Indian phone number.'); return; }
+    setLoading(true);
+    setTimeout(() => { setLoading(false); onSubmit(phone); }, 1100);
+  };
+
+  return (
+    <div style={{ display:'flex', justifyContent:'center', alignItems:'center', minHeight:'820px', background: T.bg, padding:'16px', fontFamily: T.sans }}>
+      <div style={{ width:'100%', maxWidth:'340px', background: T.surface, borderRadius: T.rLg, boxShadow: T.shadowCard, padding:'36px 28px', textAlign:'center' }}>
+        <div style={{ display:'flex', justifyContent:'center', marginBottom:'20px' }}><LogoMark size={44} /></div>
+        <h1 style={{ margin:'0 0 8px', fontSize:'21px', fontWeight:700, color: T.fg1 }}>Login with Phone</h1>
+        <p style={{ margin:'0 0 24px', fontSize:'13px', color: T.fg2, lineHeight:1.5 }}>
+          Enter your 10-digit Indian phone number to receive an OTP.
+        </p>
+        <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
+          <div style={{ position:'relative' }}>
+            <div style={{ position:'absolute', left:'13px', top:'50%', transform:'translateY(-50%)', color: T.fg2, display:'flex', pointerEvents:'none' }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.64 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.03 6.03l1.01-1.01a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <input
+              type="tel" placeholder="e.g., 9876543210"
+              value={phone} onChange={handleChange}
+              maxLength={10} disabled={loading}
+              style={{ width:'100%', background:'transparent', border:`1px solid ${error ? T.error : T.outline}`, borderRadius: T.rMd, color: T.fg1, fontSize:'15px', fontFamily: T.sans, padding:'12px 12px 12px 38px', outline:'none', transition:'border-color .2s' }}
+              onFocus={e => { e.target.style.borderColor = T.primary; e.target.style.boxShadow = T.shadowPrimary; }}
+              onBlur={e => { e.target.style.borderColor = error ? T.error : T.outline; e.target.style.boxShadow = 'none'; }}
+            />
+          </div>
+          {error && <div style={{ fontSize:'12px', color: T.error, textAlign:'left', marginTop:'-6px' }}>{error}</div>}
+          <button type="submit" disabled={loading}
+            style={{ background: loading ? 'rgba(187,134,252,.5)' : T.primary, color:'#000', border:'none', borderRadius: T.rLg, padding:'13px', fontSize:'14px', fontWeight:600, fontFamily: T.sans, cursor: loading ? 'not-allowed' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', marginTop:'4px', transition:'box-shadow .2s' }}
+            onMouseEnter={e => { if(!loading) e.currentTarget.style.boxShadow = T.shadowGlow; }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}>
+            {loading ? <><Spinner />Sending OTP…</> : 'Get OTP'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ── OTP Verification ───────────────────────*/
+function OtpVerificationScreen({ phoneNumber, onVerify, onBack }) {
+  const [otp, setOtp] = useState(Array(6).fill(''));
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(30);
+  const refs = useRef([]);
+
+  useEffect(() => { refs.current[0]?.focus(); }, []);
+  useEffect(() => {
+    if (timer <= 0) return;
+    const id = setTimeout(() => setTimer(n => n - 1), 1000);
+    return () => clearTimeout(id);
+  }, [timer]);
+
+  const handleChange = (i, val) => {
+    const d = val.replace(/\D/g,'').slice(-1);
+    const next = [...otp]; next[i] = d; setOtp(next); setError('');
+    if (d && i < 5) refs.current[i+1]?.focus();
+  };
+  const handleKeyDown = (i, e) => {
+    if (e.key === 'Backspace') {
+      if (!otp[i] && i > 0) { refs.current[i-1]?.focus(); const n=[...otp]; n[i-1]=''; setOtp(n); }
+      else { const n=[...otp]; n[i]=''; setOtp(n); }
+    }
+  };
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const p = e.clipboardData.getData('text').replace(/\D/g,'').slice(0,6);
+    const n = Array(6).fill('');
+    for (let i=0;i<p.length;i++) n[i]=p[i];
+    setOtp(n);
+    refs.current[Math.min(p.length,5)]?.focus();
+  };
+
+  const full = otp.join('');
+  const complete = full.length === 6;
+
+  const handleVerify = (e) => {
+    e.preventDefault();
+    if (!complete) { setError('Please enter the 6-digit OTP.'); return; }
+    if (full === '000000') { setError('Wrong OTP. Please check and try again.'); return; }
+    setLoading(true);
+    setTimeout(() => { setLoading(false); onVerify(); }, 1100);
+  };
+
+  const cell = (i) => ({
+    width:'40px', height:'50px',
+    border:`1px solid ${error ? T.error : otp[i] ? 'rgba(187,134,252,.5)' : T.outline}`,
+    borderRadius: T.rSm, background:'transparent', color: T.fg1,
+    fontSize:'20px', fontWeight:500, fontFamily: T.mono, textAlign:'center',
+    outline:'none', transition:'border-color .15s, box-shadow .15s', caretColor: T.primary,
+  });
+
+  return (
+    <div style={{ display:'flex', justifyContent:'center', alignItems:'center', minHeight:'820px', background: T.bg, padding:'16px', fontFamily: T.sans }}>
+      <div style={{ width:'100%', maxWidth:'340px', background: T.surface, borderRadius: T.rLg, boxShadow: T.shadowCard, padding:'32px 28px', textAlign:'center' }}>
+        <div style={{ textAlign:'left', marginBottom:'14px' }}>
+          <button onClick={onBack} style={{ background:'none', border:'none', color: T.primary, cursor:'pointer', fontSize:'13px', fontFamily: T.sans, padding:'4px 0', display:'flex', alignItems:'center', gap:'6px' }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Back
+          </button>
+        </div>
+        <div style={{ display:'flex', justifyContent:'center', marginBottom:'18px' }}><LogoMark size={38} /></div>
+        <h1 style={{ margin:'0 0 8px', fontSize:'21px', fontWeight:700, color: T.fg1 }}>Verify OTP</h1>
+        <p style={{ margin:'0 0 24px', fontSize:'13px', color: T.fg2, lineHeight:1.5 }}>
+          OTP sent to <span style={{ color: T.primary, fontWeight:600 }}>+91 {phoneNumber}</span>
+        </p>
+        <form onSubmit={handleVerify}>
+          <div style={{ display:'flex', gap:'7px', justifyContent:'center', marginBottom:'14px' }} onPaste={handlePaste}>
+            {otp.map((d, i) => (
+              <input key={i} ref={el => refs.current[i]=el} type="tel" inputMode="numeric" maxLength={1}
+                value={d} onChange={e => handleChange(i, e.target.value)}
+                onKeyDown={e => handleKeyDown(i, e)} style={cell(i)}
+                onFocus={e => { e.target.style.borderColor = T.primary; e.target.style.boxShadow = T.shadowPrimary; }}
+                onBlur={e => { e.target.style.borderColor = error ? T.error : otp[i] ? 'rgba(187,134,252,.5)' : T.outline; e.target.style.boxShadow = 'none'; }}
+              />
+            ))}
+          </div>
+          {error && <div style={{ fontSize:'12px', color: T.error, marginBottom:'10px' }}>{error}</div>}
+          <div style={{ fontSize:'11px', color: T.fg3, marginBottom:'16px' }}>
+            Enter any code except <span style={{ fontFamily: T.mono }}>000000</span> to continue
+          </div>
+          <button type="submit" disabled={!complete || loading}
+            style={{ width:'100%', background: (!complete||loading) ? 'rgba(187,134,252,.3)' : T.primary, color:'#000', border:'none', borderRadius: T.rLg, padding:'13px', fontSize:'14px', fontWeight:600, fontFamily: T.sans, cursor: (!complete||loading) ? 'not-allowed' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', transition:'box-shadow .2s' }}
+            onMouseEnter={e => { if(complete&&!loading) e.currentTarget.style.boxShadow = T.shadowGlow; }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}>
+            {loading ? <><Spinner />Verifying…</> : 'Verify OTP'}
+          </button>
+          <div style={{ marginTop:'16px', textAlign:'center' }}>
+            {timer > 0
+              ? <span style={{ fontSize:'13px', color: T.fg2 }}>Resend OTP in {timer}s</span>
+              : <button type="button" onClick={() => { setTimer(30); setOtp(Array(6).fill('')); refs.current[0]?.focus(); }}
+                  style={{ background:'none', border:'none', color: T.primary, cursor:'pointer', fontSize:'13px', fontFamily: T.sans, fontWeight:500 }}>
+                  Resend OTP
+                </button>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ── Dashboard ──────────────────────────────*/
+function DashboardScreen({ onLogout }) {
+  const [tab, setTab] = useState('home');
+
+  const navItems = [
+    { id:'home',     label:'Home',     Icon: HomeIcon },
+    { id:'batches',  label:'Batches',  Icon: BatchIcon },
+    { id:'schedule', label:'Schedule', Icon: CalIcon },
+    { id:'profile',  label:'Profile',  Icon: UserIcon },
+  ];
+
+  const stats = [
+    { label:'Active Batches', value:'12', trend:'+2', trendColor: T.success },
+    { label:'Total Students', value:'348', trend:'+15', trendColor: T.secondary },
+    { label:'Sessions Today', value:'6', trend:'—', trendColor: T.fg2 },
+    { label:'Pending Tasks', value:'4', trend:'-1', trendColor: T.error },
+  ];
+
+  const batches = [
+    { name:'Math Batch A', students:32, time:'10:00 AM', status:'active' },
+    { name:'Science B',    students:28, time:'12:30 PM', status:'active' },
+    { name:'English Adv.', students:18, time:'3:00 PM',  status:'upcoming' },
+    { name:'Physics W/E',  students:24, time:'Sat 9 AM', status:'upcoming' },
+  ];
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', minHeight:'820px', background: T.bg, fontFamily: T.sans, color: T.fg1 }}>
+      {/* App bar */}
+      <div style={{ background: T.surface, padding:'14px 18px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 2px 8px rgba(0,0,0,.4)', flexShrink:0 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:'9px' }}>
+          <LogoMark size={26} />
+          <span style={{ fontSize:'17px', fontWeight:700 }}>BatchBook</span>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+          <button style={{ background:'none', border:'none', color: T.fg2, cursor:'pointer', padding:'4px', display:'flex' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </button>
+          <div onClick={onLogout} title="Logout" style={{ width:'30px', height:'30px', borderRadius:'50%', background: T.primaryCont, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', fontSize:'11px', fontWeight:700, color: T.primary, userSelect:'none' }}>BD</div>
+        </div>
+      </div>
+
+      {/* Scrollable content */}
+      <div style={{ flex:1, padding:'18px 16px', overflowY:'auto' }}>
+        {tab === 'home' && <>
+          <div style={{ marginBottom:'18px' }}>
+            <div style={{ fontSize:'12px', color: T.fg2 }}>Good morning,</div>
+            <div style={{ fontSize:'20px', fontWeight:700 }}>Welcome back 👋</div>
+          </div>
+          {/* Stats */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'20px' }}>
+            {stats.map(s => (
+              <div key={s.label} style={{ background: T.surface, borderRadius: T.rMd, padding:'14px 12px', boxShadow: T.shadowCard }}>
+                <div style={{ fontSize:'10px', color: T.fg2, textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:'6px' }}>{s.label}</div>
+                <div style={{ display:'flex', alignItems:'baseline', gap:'6px' }}>
+                  <span style={{ fontSize:'26px', fontWeight:700, color: T.primary }}>{s.value}</span>
+                  <span style={{ fontSize:'12px', color: s.trendColor }}>{s.trend}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Batches list */}
+          <div style={{ fontSize:'14px', fontWeight:600, marginBottom:'10px' }}>Recent Batches</div>
+          <div style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
+            {batches.map(b => (
+              <div key={b.name} style={{ background: T.surface, borderRadius: T.rMd, padding:'12px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 2px 8px rgba(0,0,0,.3)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+                  <div style={{ width:'34px', height:'34px', borderRadius: T.rSm, background: T.primaryCont, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.primary} strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                  </div>
+                  <div>
+                    <div style={{ fontSize:'13px', fontWeight:600 }}>{b.name}</div>
+                    <div style={{ fontSize:'11px', color: T.fg2 }}>{b.students} students · {b.time}</div>
+                  </div>
+                </div>
+                <div style={{ padding:'2px 9px', borderRadius: T.rFull, fontSize:'10px', fontWeight:600, background: b.status==='active' ? 'rgba(76,175,80,.15)' : 'rgba(187,134,252,.12)', color: b.status==='active' ? T.success : T.primary }}>{b.status}</div>
+              </div>
+            ))}
+          </div>
+        </>}
+        {tab !== 'home' && (
+          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minHeight:'60vh', color: T.fg2, gap:'10px' }}>
+            <div style={{ opacity:.25 }}><BatchIcon size={40} active={false} /></div>
+            <div style={{ fontSize:'15px', fontWeight:600, color: T.fg1 }}>{tab.charAt(0).toUpperCase()+tab.slice(1)}</div>
+            <div style={{ fontSize:'12px' }}>Placeholder screen</div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom nav */}
+      <div style={{ background: T.surface, padding:'8px 0 10px', display:'flex', justifyContent:'space-around', boxShadow:'0 -2px 8px rgba(0,0,0,.4)', borderTop:`1px solid ${T.outline}`, flexShrink:0 }}>
+        {navItems.map(({ id, label, Icon }) => {
+          const active = tab === id;
+          return (
+            <button key={id} onClick={() => setTab(id)} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:'3px', padding:'6px 14px', color: active ? T.primary : T.fg2, transition:'color .15s' }}>
+              <Icon size={21} active={active} />
+              <span style={{ fontSize:'10px', fontWeight: active ? 600 : 400, fontFamily: T.sans }}>{label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ── Nav icons ──────────────────────────────*/
+function HomeIcon({ size=20, active }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill={active ? T.primary : 'none'} stroke={active ? T.primary : 'currentColor'} strokeWidth="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+}
+function BatchIcon({ size=20, active }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={active ? T.primary : 'currentColor'} strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>;
+}
+function CalIcon({ size=20, active }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={active ? T.primary : 'currentColor'} strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
+}
+function UserIcon({ size=20, active }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={active ? T.primary : 'currentColor'} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+}
+
+/* ── Root App ───────────────────────────────*/
+const SCREENS = [
+  { id:'phone',     label:'Phone Login',      sub:'/ (root)' },
+  { id:'otp',       label:'OTP Verification', sub:'/otp-verification' },
+  { id:'dashboard', label:'Dashboard',         sub:'/dashboard' },
+];
+
+function App() {
+  const [screen, setScreen] = useState('phone');
+  const [phone, setPhone]   = useState('');
+
+  // Sync sidebar nav
+  useEffect(() => {
+    const nav = document.getElementById('screen-nav');
+    if (!nav) return;
+    nav.innerHTML = '';
+    SCREENS.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'screen-btn' + (screen === s.id ? ' active' : '');
+      btn.innerHTML = `<div class="dot"></div><div style="display:flex;flex-direction:column;gap:2px"><div>${s.label}</div><div style="font-size:10px;opacity:.45;font-family:'JetBrains Mono',monospace;">${s.sub}</div></div>`;
+      btn.addEventListener('click', () => setScreen(s.id));
+      nav.appendChild(btn);
+    });
+  }, [screen]);
+
+  if (screen === 'phone')     return <PhoneLoginScreen onSubmit={(ph) => { setPhone(ph); setScreen('otp'); }} />;
+  if (screen === 'otp')       return <OtpVerificationScreen phoneNumber={phone} onVerify={() => setScreen('dashboard')} onBack={() => setScreen('phone')} />;
+  if (screen === 'dashboard') return <DashboardScreen onLogout={() => setScreen('phone')} />;
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById('app-root')).render(<App />);
+</script>
+</body>
+</html>

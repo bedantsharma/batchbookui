@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--color-background); font-family: var(--font-mono); padding: 20px; }
+  .row { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; }
+  .logo-block { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .logo-bg { display: flex; align-items: center; justify-content: center; border-radius: 12px; padding: 16px; }
+  .label { font-size: 10px; color: var(--fg3); font-family: var(--font-mono); text-align: center; line-height: 1.4; }
+  .divider { border: none; border-top: 1px solid var(--color-outline); margin: 14px 0; }
+  .wordmark { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--fg1); letter-spacing: -0.5px; }
+  .wordmark span { color: #BB86FC; }
+</style>
+</head><body>
+
+<!-- Inline logo SVG macro -->
+<svg style="display:none">
+  <symbol id="bb-logo" viewBox="0 0 48 46">
+    <path fill="#863bff" d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z"/>
+    <!-- shimmer highlight -->
+    <ellipse cx="27" cy="10" rx="5" ry="18" fill="rgba(237,230,255,0.18)" transform="rotate(-15 27 10)"/>
+  </symbol>
+</svg>
+
+<div class="row">
+
+  <!-- On dark -->
+  <div class="logo-block">
+    <div class="logo-bg" style="background:#121212; border:1px solid rgba(255,255,255,0.1); width:64px; height:64px;">
+      <svg width="40" height="38" viewBox="0 0 48 46"><use href="#bb-logo"/></svg>
+    </div>
+    <div class="label">on dark<br>#121212</div>
+  </div>
+
+  <!-- On surface -->
+  <div class="logo-block">
+    <div class="logo-bg" style="background:#1E1E1E; width:64px; height:64px;">
+      <svg width="40" height="38" viewBox="0 0 48 46"><use href="#bb-logo"/></svg>
+    </div>
+    <div class="label">on surface<br>#1E1E1E</div>
+  </div>
+
+  <!-- On primary container -->
+  <div class="logo-block">
+    <div class="logo-bg" style="background:#3700B3; width:64px; height:64px;">
+      <svg width="40" height="38" viewBox="0 0 48 46"><use href="#bb-logo"/></svg>
+    </div>
+    <div class="label">on primary<br>container</div>
+  </div>
+
+  <!-- Large -->
+  <div class="logo-block">
+    <div class="logo-bg" style="background:#1E1E1E; width:88px; height:88px;">
+      <svg width="64" height="61" viewBox="0 0 48 46"><use href="#bb-logo"/></svg>
+    </div>
+    <div class="label">large<br>64px</div>
+  </div>
+
+  <!-- Small -->
+  <div class="logo-block">
+    <div class="logo-bg" style="background:#1E1E1E; width:40px; height:40px; padding:8px;">
+      <svg width="22" height="21" viewBox="0 0 48 46"><use href="#bb-logo"/></svg>
+    </div>
+    <div class="label">small<br>22px</div>
+  </div>
+
+  <!-- Favicon -->
+  <div class="logo-block">
+    <div class="logo-bg" style="background:#1E1E1E; width:32px; height:32px; padding:6px; border-radius:6px;">
+      <svg width="16" height="15" viewBox="0 0 48 46"><use href="#bb-logo"/></svg>
+    </div>
+    <div class="label">favicon<br>16px</div>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- Wordmark lockups -->
+<div style="margin-bottom:10px; font-size:10px; font-weight:600; color:var(--fg3); letter-spacing:0.1em; text-transform:uppercase;">Wordmark lockups</div>
+<div style="display:flex; flex-direction:column; gap:14px;">
+
+  <!-- Horizontal lockup -->
+  <div style="display:inline-flex; align-items:center; gap:10px; background:#1E1E1E; padding:12px 18px; border-radius:12px;">
+    <svg width="28" height="27" viewBox="0 0 48 46"><use href="#bb-logo"/></svg>
+    <div class="wordmark">Batch<span>Book</span></div>
+  </div>
+
+  <!-- Compact lockup -->
+  <div style="display:inline-flex; align-items:center; gap:8px; background:#121212; padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
+    <svg width="20" height="19" viewBox="0 0 48 46"><use href="#bb-logo"/></svg>
+    <div style="font-family:var(--font-mono); font-size:15px; font-weight:700; color:var(--fg1); letter-spacing:-0.3px;">Batch<span style="color:#BB86FC;">Book</span></div>
+  </div>
+
+  <!-- Icon only pill -->
+  <div style="display:inline-flex; align-items:center; gap:8px;">
+    <div style="background:#863bff; border-radius:10px; width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+      <svg width="22" height="21" viewBox="0 0 48 46">
+        <path fill="white" d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z"/>
+      </svg>
+    </div>
+    <div style="font-size:10px; color:var(--fg3); font-family:var(--font-mono);">icon on brand bg (white fill)</div>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+<div style="font-size:11px; color:var(--fg3); line-height:1.7;">
+  Logo is a <strong style="color:var(--fg2);">lightning bolt / power stack</strong> glyph in brand purple <span style="font-family:var(--font-mono); color:#BB86FC;">#863bff</span>.<br>
+  Minimum size: <strong style="color:var(--fg2);">16px</strong>. Preferred clear-space: ½ logo width on all sides.
+</div>
+
+</body></html>

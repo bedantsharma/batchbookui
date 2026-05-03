@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--color-background); font-family: var(--font-sans); padding: 20px; }
+  .specimen { margin-bottom: 14px; display: flex; align-items: baseline; gap: 16px; }
+  .meta { font-size: 10px; color: var(--fg3); font-family: var(--font-mono); min-width: 150px; flex-shrink: 0; line-height: 1.5; }
+  .divider { border: none; border-top: 1px solid var(--color-outline); margin: 10px 0; }
+  .otp-row { display: flex; gap: 8px; }
+  .otp-cell { width: 40px; height: 48px; border: 1px solid var(--color-outline); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 20px; font-weight: 500; color: var(--fg1); }
+  .otp-cell.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(187,134,252,0.3); }
+  .section-title { font-size: 10px; font-weight: 600; color: var(--fg3); letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 8px; }
+</style>
+</head><body>
+
+  <!-- JetBrains Mono (ligatures) -->
+  <div class="section-title">JetBrains Mono — with ligatures</div>
+  <div class="specimen">
+    <div class="meta">Regular 400<br>14px</div>
+    <div style="font-family:'JetBrains Mono'; font-size:14px; font-weight:400; color:var(--fg2);">import { cn } from '@/lib/utils'</div>
+  </div>
+  <div class="specimen">
+    <div class="meta">Medium 500<br>14px</div>
+    <div style="font-family:'JetBrains Mono'; font-size:14px; font-weight:500; color:var(--fg1);">const fn = () =&gt; result !== null</div>
+  </div>
+  <div class="specimen">
+    <div class="meta">SemiBold 600<br>14px</div>
+    <div style="font-family:'JetBrains Mono'; font-size:14px; font-weight:600; color:var(--accent);">+91 98765 43210</div>
+  </div>
+  <div class="specimen">
+    <div class="meta">Bold 700<br>14px</div>
+    <div style="font-family:'JetBrains Mono'; font-size:14px; font-weight:700; color:var(--fg1);">ERROR: Invalid OTP</div>
+  </div>
+  <div class="specimen">
+    <div class="meta">Italic 400<br>13px</div>
+    <div style="font-family:'JetBrains Mono'; font-size:13px; font-weight:400; font-style:italic; color:var(--fg3);">// phone-auth flow</div>
+  </div>
+  <div class="specimen">
+    <div class="meta">ExtraBold 800<br>18px</div>
+    <div style="font-family:'JetBrains Mono'; font-size:18px; font-weight:800; color:var(--fg1);">BatchBook</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- JetBrains Mono NL (no ligatures) -->
+  <div class="section-title">JetBrains Mono NL — no ligatures</div>
+  <div class="specimen">
+    <div class="meta">Regular 400<br>14px</div>
+    <div style="font-family:'JetBrains Mono NL'; font-size:14px; font-weight:400; color:var(--fg2);">import { cn } from '@/lib/utils'</div>
+  </div>
+  <div class="specimen">
+    <div class="meta">Medium 500<br>14px</div>
+    <div style="font-family:'JetBrains Mono NL'; font-size:14px; font-weight:500; color:var(--fg1);">const fn = () =&gt; result !== null</div>
+  </div>
+  <div class="specimen">
+    <div class="meta">SemiBold 600<br>13px italic</div>
+    <div style="font-family:'JetBrains Mono NL'; font-size:13px; font-weight:600; font-style:italic; color:var(--fg3);">// no-ligatures variant</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- OTP usage -->
+  <div class="section-title">OTP Input — JetBrains Mono 500</div>
+  <div class="otp-row">
+    <div class="otp-cell">4</div>
+    <div class="otp-cell">2</div>
+    <div class="otp-cell active">8</div>
+    <div class="otp-cell" style="color:var(--fg3); font-size:14px;">—</div>
+    <div class="otp-cell" style="color:var(--fg3); font-size:14px;">—</div>
+    <div class="otp-cell" style="color:var(--fg3); font-size:14px;">—</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Weight ramp -->
+  <div class="section-title">Weight ramp — JetBrains Mono</div>
+  <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:baseline;">
+    <span style="font-family:'JetBrains Mono'; font-size:13px; font-weight:100; color:var(--fg2);">Thin</span>
+    <span style="font-family:'JetBrains Mono'; font-size:13px; font-weight:200; color:var(--fg2);">XLight</span>
+    <span style="font-family:'JetBrains Mono'; font-size:13px; font-weight:300; color:var(--fg2);">Light</span>
+    <span style="font-family:'JetBrains Mono'; font-size:13px; font-weight:400; color:var(--fg1);">Regular</span>
+    <span style="font-family:'JetBrains Mono'; font-size:13px; font-weight:500; color:var(--fg1);">Medium</span>
+    <span style="font-family:'JetBrains Mono'; font-size:13px; font-weight:600; color:var(--fg1);">SemiBold</span>
+    <span style="font-family:'JetBrains Mono'; font-size:13px; font-weight:700; color:var(--fg1);">Bold</span>
+    <span style="font-family:'JetBrains Mono'; font-size:13px; font-weight:800; color:var(--accent);">ExtraBold</span>
+  </div>
+
+</body></html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--color-background); font-family: var(--font-sans); padding: 20px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .swatch { display: flex; flex-direction: column; gap: 6px; }
+  .chip { width: 80px; height: 48px; border-radius: 8px; }
+  .label { font-size: 10px; color: var(--fg2); font-weight: 600; }
+  .val { font-size: 9px; color: var(--fg3); font-family: var(--font-mono); }
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; margin-top: 4px; }
+</style>
+</head><body>
+<div class="row">
+  <div class="swatch">
+    <div class="chip" style="background:#CF6679"></div>
+    <div class="label">Error</div>
+    <div class="val">#CF6679</div>
+    <div class="badge" style="background:#B00020;color:#CF6679;">✗ Failed</div>
+  </div>
+  <div class="swatch">
+    <div class="chip" style="background:#B00020"></div>
+    <div class="label">Error Cont.</div>
+    <div class="val">#B00020</div>
+  </div>
+  <div class="swatch">
+    <div class="chip" style="background:#4CAF50"></div>
+    <div class="label">Success</div>
+    <div class="val">#4CAF50</div>
+    <div class="badge" style="background:rgba(76,175,80,0.15);color:#4CAF50;">✓ Verified</div>
+  </div>
+  <div class="swatch">
+    <div class="chip" style="background:#FB8C00"></div>
+    <div class="label">Warning</div>
+    <div class="val">#FB8C00</div>
+    <div class="badge" style="background:rgba(251,140,0,0.15);color:#FB8C00;">⚠ Pending</div>
+  </div>
+  <div class="swatch">
+    <div class="chip" style="background:#BB86FC"></div>
+    <div class="label">Info / Primary</div>
+    <div class="val">#BB86FC</div>
+    <div class="badge" style="background:rgba(187,134,252,0.15);color:#BB86FC;">ℹ New</div>
+  </div>
+</div>
+</body></html>

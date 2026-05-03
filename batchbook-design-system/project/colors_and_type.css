@@ -1,0 +1,268 @@
+/**
+ * BatchBook Design System
+ * Colors & Typography CSS Custom Properties
+ * Based on Material 3 dark theme + BatchBook brand
+ *
+ * Fonts: Geist (primary UI) — DM Sans substitution via Google Fonts
+ *        JetBrains Mono — brand font, local TTF files in fonts/
+ *        JetBrains Mono NL — no-ligatures variant, local TTF files in fonts/
+ */
+
+/* ─── Google Font Import (DM Sans — Geist substitute) ─────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+/* ─── JetBrains Mono (@font-face — brand TTFs) ────────────── */
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-Thin.ttf') format('truetype'); font-weight: 100; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-ThinItalic.ttf') format('truetype'); font-weight: 100; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-ExtraLight.ttf') format('truetype'); font-weight: 200; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-ExtraLightItalic.ttf') format('truetype'); font-weight: 200; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-Light.ttf') format('truetype'); font-weight: 300; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-LightItalic.ttf') format('truetype'); font-weight: 300; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-Italic.ttf') format('truetype'); font-weight: 400; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-Medium.ttf') format('truetype'); font-weight: 500; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-MediumItalic.ttf') format('truetype'); font-weight: 500; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-SemiBold.ttf') format('truetype'); font-weight: 600; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-SemiBoldItalic.ttf') format('truetype'); font-weight: 600; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-BoldItalic.ttf') format('truetype'); font-weight: 700; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-ExtraBold.ttf') format('truetype'); font-weight: 800; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono-ExtraBoldItalic.ttf') format('truetype'); font-weight: 800; font-style: italic; }
+
+/* ─── JetBrains Mono NL (no ligatures variant) ────────────── */
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-Thin.ttf') format('truetype'); font-weight: 100; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-ThinItalic.ttf') format('truetype'); font-weight: 100; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-ExtraLight.ttf') format('truetype'); font-weight: 200; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-ExtraLightItalic.ttf') format('truetype'); font-weight: 200; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-Light.ttf') format('truetype'); font-weight: 300; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-LightItalic.ttf') format('truetype'); font-weight: 300; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-Italic.ttf') format('truetype'); font-weight: 400; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-Medium.ttf') format('truetype'); font-weight: 500; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-MediumItalic.ttf') format('truetype'); font-weight: 500; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-SemiBold.ttf') format('truetype'); font-weight: 600; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-SemiBoldItalic.ttf') format('truetype'); font-weight: 600; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-BoldItalic.ttf') format('truetype'); font-weight: 700; font-style: italic; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-ExtraBold.ttf') format('truetype'); font-weight: 800; font-style: normal; }
+@font-face { font-family: 'JetBrains Mono NL'; src: url('fonts/JetBrainsMonoNL-ExtraBoldItalic.ttf') format('truetype'); font-weight: 800; font-style: italic; }
+
+/* ─── Brand Color Tokens ───────────────────────────────────── */
+:root {
+  /* Primary purple palette */
+  --color-primary-50:  #f5eeff;
+  --color-primary-100: #ede6ff;
+  --color-primary-200: #d6c3ff;
+  --color-primary-300: #b88fff;
+  --color-primary-400: #a263ff;
+  --color-primary-500: #863bff;  /* Brand primary */
+  --color-primary-600: #7e14ff;  /* Vivid / logo inner */
+  --color-primary-700: #6b00e0;
+  --color-primary-800: #5400b0;
+  --color-primary-900: #3d0080;
+
+  /* MUI dark theme primary (lighter for dark bg readability) */
+  --color-primary-mui: #BB86FC;
+  --color-on-primary:  #FFFFFF;
+  --color-primary-container: #3700B3;
+  --color-on-primary-container: #BB86FC;
+
+  /* Secondary — teal */
+  --color-secondary:   #03DAC6;
+  --color-on-secondary: #000000;
+  --color-secondary-container: #018786;
+  --color-on-secondary-container: #03DAC6;
+
+  /* Error */
+  --color-error:       #CF6679;
+  --color-on-error:    #000000;
+  --color-error-container: #B00020;
+  --color-on-error-container: #CF6679;
+
+  /* Success (not in source, derived) */
+  --color-success:     #4CAF50;
+  --color-on-success:  #000000;
+
+  /* Warning (not in source, derived) */
+  --color-warning:     #FB8C00;
+  --color-on-warning:  #000000;
+
+  /* ─── Neutral / Background / Surface ───────────────────── */
+  --color-background:        #121212;
+  --color-on-background:     #FFFFFF;
+  --color-surface:           #1E1E1E;
+  --color-on-surface:        #FFFFFF;
+  --color-surface-variant:   #2C2C2C;
+  --color-on-surface-variant: #B0B0B0;
+  --color-surface-2:         #252525;
+  --color-surface-3:         #2E2E2E;
+  --color-outline:           rgba(255, 255, 255, 0.12);
+  --color-outline-variant:   rgba(255, 255, 255, 0.08);
+  --color-scrim:             rgba(0, 0, 0, 0.6);
+
+  /* ─── Text Colors ───────────────────────────────────────── */
+  --color-text-primary:      #FFFFFF;
+  --color-text-secondary:    #B0B0B0;
+  --color-text-disabled:     rgba(255, 255, 255, 0.38);
+  --color-text-hint:         rgba(255, 255, 255, 0.3);
+
+  /* ─── Semantic / Role-based aliases ────────────────────── */
+  --fg1:     var(--color-text-primary);
+  --fg2:     var(--color-text-secondary);
+  --fg3:     var(--color-text-disabled);
+  --bg1:     var(--color-background);
+  --bg2:     var(--color-surface);
+  --bg3:     var(--color-surface-variant);
+  --accent:  var(--color-primary-mui);
+  --accent-vivid: var(--color-primary-500);
+  --border:  var(--color-outline);
+}
+
+/* ─── Typography Scale ─────────────────────────────────────── */
+:root {
+  /* Font families */
+  --font-sans:    'JetBrains Mono', 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
+  --font-mono-nl: 'JetBrains Mono NL', 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Font sizes — Material 3 type scale */
+  --type-display-large:   57px;
+  --type-display-medium:  45px;
+  --type-display-small:   36px;
+  --type-headline-large:  32px;
+  --type-headline-medium: 28px;
+  --type-headline-small:  24px;
+  --type-title-large:     22px;
+  --type-title-medium:    16px;
+  --type-title-small:     14px;
+  --type-body-large:      16px;
+  --type-body-medium:     14px;
+  --type-body-small:      12px;
+  --type-label-large:     14px;
+  --type-label-medium:    12px;
+  --type-label-small:     11px;
+
+  /* Font weights */
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semibold: 600;
+  --weight-bold:    700;
+
+  /* Line heights */
+  --leading-display:  64px;
+  --leading-headline: 40px;
+  --leading-title:    28px;
+  --leading-body:     24px;
+  --leading-label:    16px;
+
+  /* Letter spacing */
+  --tracking-display:  -0.25px;
+  --tracking-headline:  0px;
+  --tracking-title:     0px;
+  --tracking-body:      0.5px;
+  --tracking-label:     0.1px;
+}
+
+/* ─── Semantic type roles ──────────────────────────────────── */
+:root {
+  --text-display:   var(--weight-regular) var(--type-display-medium)/var(--leading-display) var(--font-sans);
+  --text-h1:        var(--weight-bold) var(--type-headline-large)/var(--leading-headline) var(--font-sans);
+  --text-h2:        var(--weight-bold) var(--type-headline-medium)/var(--leading-headline) var(--font-sans);
+  --text-h3:        var(--weight-semibold) var(--type-headline-small)/var(--leading-headline) var(--font-sans);
+  --text-title-lg:  var(--weight-semibold) var(--type-title-large)/var(--leading-title) var(--font-sans);
+  --text-title:     var(--weight-medium) var(--type-title-medium)/var(--leading-title) var(--font-sans);
+  --text-title-sm:  var(--weight-medium) var(--type-title-small)/var(--leading-title) var(--font-sans);
+  --text-body-lg:   var(--weight-regular) var(--type-body-large)/var(--leading-body) var(--font-sans);
+  --text-body:      var(--weight-regular) var(--type-body-medium)/var(--leading-body) var(--font-sans);
+  --text-body-sm:   var(--weight-regular) var(--type-body-small)/var(--leading-body) var(--font-sans);
+  --text-label-lg:  var(--weight-medium) var(--type-label-large)/var(--leading-label) var(--font-sans);
+  --text-label:     var(--weight-medium) var(--type-label-medium)/var(--leading-label) var(--font-sans);
+  --text-label-sm:  var(--weight-medium) var(--type-label-small)/var(--leading-label) var(--font-sans);
+  --text-code:      var(--weight-regular) var(--type-body-medium)/var(--leading-body) var(--font-mono);
+}
+
+/* ─── Spacing Scale (MUI 8px base) ────────────────────────── */
+:root {
+  --space-0:   0px;
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+}
+
+/* ─── Border Radii ─────────────────────────────────────────── */
+:root {
+  --radius-sm:    8px;   /* OTP cells */
+  --radius-md:    12px;  /* Text fields */
+  --radius-lg:    16px;  /* Cards, buttons */
+  --radius-xl:    24px;  /* Large containers */
+  --radius-full:  9999px; /* Pills / chips */
+}
+
+/* ─── Elevation / Shadows ──────────────────────────────────── */
+:root {
+  --shadow-1: 0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.6);
+  --shadow-2: 0 3px 6px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.6);
+  --shadow-3: 0 10px 20px rgba(0,0,0,0.5), 0 3px 6px rgba(0,0,0,0.6);  /* card default */
+  --shadow-4: 0 15px 25px rgba(0,0,0,0.5), 0 5px 10px rgba(0,0,0,0.6);
+  --shadow-5: 0 20px 40px rgba(0,0,0,0.6);
+  /* Primary glow — for focused/active states */
+  --shadow-primary: 0 0 0 3px rgba(187, 134, 252, 0.3);
+  --shadow-primary-vivid: 0 0 16px rgba(134, 59, 255, 0.4);
+}
+
+/* ─── Utility classes ─────────────────────────────────────── */
+.batchbook-dark {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--type-body-medium);
+  line-height: var(--leading-body);
+}
+
+.bb-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-3);
+  padding: var(--space-8);
+}
+
+.bb-btn-primary {
+  background-color: var(--color-primary-mui);
+  color: var(--color-on-primary);
+  border-radius: var(--radius-lg);
+  font: var(--text-label-lg);
+  padding: var(--space-3) var(--space-6);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.bb-btn-primary:hover {
+  background-color: var(--color-primary-400);
+  box-shadow: var(--shadow-primary-vivid);
+}
+.bb-btn-primary:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-primary);
+}
+
+.bb-input {
+  background-color: transparent;
+  border: 1px solid var(--color-outline);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font: var(--text-body-lg);
+  padding: var(--space-4) var(--space-4);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.bb-input:focus {
+  outline: none;
+  border-color: var(--color-primary-mui);
+  box-shadow: var(--shadow-primary);
+}

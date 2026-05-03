@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--color-background); font-family: var(--font-sans); padding: 20px; }
+  .section-title { font-size: 11px; font-weight: 600; color: var(--fg2); letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 10px; }
+  .col { display: flex; flex-direction: column; gap: 12px; max-width: 320px; }
+  .field-wrap { display: flex; flex-direction: column; gap: 4px; }
+  .field-label { font-size: 12px; color: var(--fg2); font-weight: 500; }
+  .field { position: relative; }
+  .field input { width: 100%; box-sizing: border-box; background: transparent; border: 1px solid var(--color-outline); border-radius: var(--radius-md); color: var(--fg1); font: var(--text-body-lg); font-family: var(--font-sans); padding: 12px 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .field input:focus { border-color: var(--color-primary-mui); box-shadow: var(--shadow-primary); }
+  .field input.error { border-color: var(--color-error); }
+  .field input:disabled { background: rgba(255,255,255,0.04); color: var(--fg3); cursor: not-allowed; }
+  .field-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--fg2); display: flex; }
+  .field input.with-icon { padding-left: 40px; }
+  .helper { font-size: 11px; color: var(--fg2); }
+  .helper.error { color: var(--color-error); }
+</style>
+</head><body>
+<div class="section-title">Input Fields</div>
+<div class="col">
+  <div class="field-wrap">
+    <div class="field-label">Default</div>
+    <div class="field"><input type="text" placeholder="e.g., 9876543210"></div>
+  </div>
+  <div class="field-wrap">
+    <div class="field-label">With Icon Adornment</div>
+    <div class="field">
+      <div class="field-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.64 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.03 6.03l1.01-1.01a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+      </div>
+      <input type="tel" class="with-icon" placeholder="Phone Number">
+    </div>
+  </div>
+  <div class="field-wrap">
+    <div class="field-label">Focused (active)</div>
+    <div class="field"><input type="text" placeholder="Phone Number" style="border-color:var(--color-primary-mui);box-shadow:var(--shadow-primary);" value="9876543"></div>
+  </div>
+  <div class="field-wrap">
+    <div class="field-label">Error State</div>
+    <div class="field"><input type="tel" class="error" value="123"></div>
+    <div class="helper error">Please enter a valid 10-digit Indian phone number.</div>
+  </div>
+  <div class="field-wrap">
+    <div class="field-label">Disabled</div>
+    <div class="field"><input type="text" disabled value="Disabled input"></div>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--color-background); font-family: var(--font-sans); padding: 20px; }
+  .section-title { font-size: 11px; font-weight: 600; color: var(--fg2); letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 12px; }
+  .otp-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .otp-cell { width: 44px; height: 52px; border: 1px solid var(--color-outline); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 22px; font-weight: 500; color: var(--fg1); transition: border-color 0.2s; }
+  .otp-cell.filled { border-color: rgba(187,134,252,0.5); }
+  .otp-cell.active { border-color: var(--color-primary-mui); box-shadow: 0 0 0 2px rgba(187,134,252,0.3); }
+  .otp-cell.error { border-color: var(--color-error); }
+  .otp-cell.empty { color: var(--fg3); font-size: 14px; }
+  .label { font-size: 12px; color: var(--fg2); margin-bottom: 6px; }
+</style>
+</head><body>
+<div class="section-title">OTP Input — States</div>
+
+<div class="label">Empty</div>
+<div class="otp-row">
+  <div class="otp-cell empty">—</div>
+  <div class="otp-cell empty">—</div>
+  <div class="otp-cell empty">—</div>
+  <div class="otp-cell empty">—</div>
+  <div class="otp-cell empty">—</div>
+  <div class="otp-cell empty">—</div>
+</div>
+
+<div class="label">In progress (3 of 6 filled)</div>
+<div class="otp-row">
+  <div class="otp-cell filled">4</div>
+  <div class="otp-cell filled">2</div>
+  <div class="otp-cell filled">8</div>
+  <div class="otp-cell active">|</div>
+  <div class="otp-cell empty">—</div>
+  <div class="otp-cell empty">—</div>
+</div>
+
+<div class="label">Complete</div>
+<div class="otp-row">
+  <div class="otp-cell filled">4</div>
+  <div class="otp-cell filled">2</div>
+  <div class="otp-cell filled">8</div>
+  <div class="otp-cell filled">9</div>
+  <div class="otp-cell filled">1</div>
+  <div class="otp-cell filled">5</div>
+</div>
+
+<div class="label">Error state</div>
+<div class="otp-row">
+  <div class="otp-cell error">1</div>
+  <div class="otp-cell error">2</div>
+  <div class="otp-cell error">3</div>
+  <div class="otp-cell error">4</div>
+  <div class="otp-cell error">5</div>
+  <div class="otp-cell error">6</div>
+</div>
+<div style="font-size:12px; color:var(--color-error);">Failed to verify OTP. Please check and try again.</div>
+</body></html>

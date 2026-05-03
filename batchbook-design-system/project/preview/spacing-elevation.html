@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--color-background); font-family: var(--font-sans); padding: 20px; }
+  .row { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+  .token { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .box { width: 72px; height: 48px; background: var(--color-surface); border-radius: 12px; }
+  .label { font-size: 10px; color: var(--fg2); font-family: var(--font-mono); text-align: center; line-height: 1.4; }
+  .section-title { font-size: 11px; font-weight: 600; color: var(--fg2); letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 12px; }
+  .glow { background: var(--color-surface); border-radius: 12px; width: 72px; height: 48px; box-shadow: 0 0 16px rgba(134,59,255,0.4); }
+  .focus { background: var(--color-surface); border-radius: 12px; width: 72px; height: 48px; box-shadow: 0 0 0 3px rgba(187,134,252,0.3); }
+</style>
+</head><body>
+<div class="section-title">Elevation & Shadow System</div>
+<div class="row">
+  <div class="token"><div class="box" style="box-shadow:none; border:1px solid var(--color-outline);"></div><div class="label">Level 0<br>flat</div></div>
+  <div class="token"><div class="box" style="box-shadow:0 1px 3px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.6);"></div><div class="label">Level 1<br>shadow-1</div></div>
+  <div class="token"><div class="box" style="box-shadow:0 3px 6px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.6);"></div><div class="label">Level 2<br>shadow-2</div></div>
+  <div class="token"><div class="box" style="box-shadow:0 10px 20px rgba(0,0,0,.5),0 3px 6px rgba(0,0,0,.6);"></div><div class="label">Level 3 ★<br>card default</div></div>
+  <div class="token"><div class="box" style="box-shadow:0 15px 25px rgba(0,0,0,.5),0 5px 10px rgba(0,0,0,.6);"></div><div class="label">Level 4<br>modal</div></div>
+  <div class="token"><div class="box" style="box-shadow:0 20px 40px rgba(0,0,0,.6);"></div><div class="label">Level 5<br>overlay</div></div>
+  <div class="token"><div class="glow"></div><div class="label">Primary<br>glow</div></div>
+  <div class="token"><div class="focus"></div><div class="label">Focus<br>ring</div></div>
+</div>
+</body></html>
