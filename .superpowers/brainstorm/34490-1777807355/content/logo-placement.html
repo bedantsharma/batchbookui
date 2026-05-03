@@ -1,0 +1,129 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .cards { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+  .card { flex: 1; min-width: 240px; max-width: 300px; background: #1a1a1a; border: 2px solid #2a2a2a;
+    border-radius: 16px; overflow: hidden; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
+  .card:hover { border-color: rgba(187,134,252,0.5); box-shadow: 0 0 20px rgba(134,59,255,0.2); }
+  .card.selected { border-color: #BB86FC; box-shadow: 0 0 24px rgba(134,59,255,0.35); }
+  .card-image { background: #0f0f0f; padding: 24px 20px; display: flex; align-items: center; justify-content: center; min-height: 220px; }
+  .card-body { padding: 14px 16px; }
+  .card-body h3 { color: #fff; font-size: 13px; font-weight: 600; margin-bottom: 5px; font-family: 'JetBrains Mono', monospace; }
+  .card-body p { color: #B0B0B0; font-size: 11px; line-height: 1.5; font-family: 'JetBrains Mono', monospace; }
+  .tag { display: inline-block; background: rgba(134,59,255,0.15); color: #BB86FC;
+    font-size: 10px; padding: 2px 8px; border-radius: 999px; margin-top: 8px;
+    border: 1px solid rgba(187,134,252,0.2); font-family: 'JetBrains Mono', monospace; }
+
+  /* Shared mock card */
+  .auth-card {
+    width: 180px; background: #1E1E1E; border-radius: 14px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5), 0 3px 6px rgba(0,0,0,0.6);
+    padding: 18px; font-family: 'JetBrains Mono', monospace;
+  }
+  .logo-row { display: flex; align-items: center; gap: 6px; }
+  .bolt { width: 18px; height: 18px; background: linear-gradient(135deg, #863bff, #BB86FC);
+    border-radius: 4px; clip-path: polygon(62% 0%, 28% 46%, 54% 46%, 38% 100%, 72% 54%, 46% 54%); flex-shrink: 0; }
+  .brand-name { color: #BB86FC; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+  .form-title { color: #fff; font-size: 10px; font-weight: 700; }
+  .form-sub { color: #B0B0B0; font-size: 7px; margin-top: 2px; margin-bottom: 10px; line-height: 1.4; }
+  .mock-input {
+    width: 100%; height: 22px; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px; background: transparent; margin-bottom: 8px;
+    display: flex; align-items: center; padding: 0 7px; gap: 5px;
+  }
+  .input-dot { width: 7px; height: 7px; background: #B0B0B0; border-radius: 50%; flex-shrink: 0; }
+  .input-ph { color: rgba(255,255,255,0.3); font-size: 6px; font-family: 'JetBrains Mono', monospace; }
+  .mock-btn {
+    width: 100%; height: 22px; background: #BB86FC; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #000; font-size: 7px; font-weight: 700; letter-spacing: 0.5px;
+  }
+  .divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 10px 0; }
+
+  /* Logo above card */
+  .above-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 180px; }
+  .logo-above { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .bolt-lg { width: 28px; height: 28px; background: linear-gradient(135deg, #863bff, #BB86FC);
+    border-radius: 7px; clip-path: polygon(62% 0%, 28% 46%, 54% 46%, 38% 100%, 72% 54%, 46% 54%); }
+  .brand-above { color: #BB86FC; font-size: 11px; font-weight: 700; letter-spacing: 2px; font-family: 'JetBrains Mono', monospace; }
+</style>
+
+<h2>Logo Placement</h2>
+<p class="subtitle">Where should the BatchBook logo appear on the login card?</p>
+
+<div class="cards">
+
+  <!-- Option A: Logo inside card at top -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="auth-card">
+        <div class="logo-row" style="margin-bottom: 14px;">
+          <div class="bolt"></div>
+          <span class="brand-name">BATCHBOOK</span>
+        </div>
+        <hr class="divider">
+        <div class="form-title">Login with Phone</div>
+        <div class="form-sub">Enter your number to receive a one-time passcode</div>
+        <div class="mock-input">
+          <div class="input-dot"></div>
+          <span class="input-ph">9876543210</span>
+        </div>
+        <div class="mock-btn">SEND OTP</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Logo inside card</h3>
+      <p>Logo + brand name sit at the top of the card, separated from the form by a subtle divider. Clean, self-contained.</p>
+      <span class="tag">Compact</span>
+    </div>
+  </div>
+
+  <!-- Option B: Logo above card -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="above-wrap">
+        <div class="logo-above">
+          <div class="bolt-lg"></div>
+          <span class="brand-above">BATCHBOOK</span>
+        </div>
+        <div class="auth-card">
+          <div class="form-title">Login with Phone</div>
+          <div class="form-sub">Enter your number to receive a one-time passcode</div>
+          <div class="mock-input">
+            <div class="input-dot"></div>
+            <span class="input-ph">9876543210</span>
+          </div>
+          <div class="mock-btn">SEND OTP</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Logo above card</h3>
+      <p>Logo floats above the card on the dark background. Card is purely the form. More airy, gives the brand more visual presence.</p>
+      <span class="tag">Spacious</span>
+    </div>
+  </div>
+
+  <!-- Option C: No logo, just app name as heading -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="auth-card" style="width: 180px;">
+        <div class="form-title" style="font-size: 12px; color: #BB86FC; letter-spacing: 1px; margin-bottom: 4px;">BATCHBOOK</div>
+        <div class="form-title" style="font-size: 10px; margin-bottom: 2px;">Login with Phone</div>
+        <div class="form-sub">Enter your number to receive a one-time passcode</div>
+        <div class="mock-input">
+          <div class="input-dot"></div>
+          <span class="input-ph">9876543210</span>
+        </div>
+        <div class="mock-btn">SEND OTP</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Text only, no icon</h3>
+      <p>App name in purple at the top of the card as a text label. No bolt icon. Minimal and typographic.</p>
+      <span class="tag">Ultra minimal</span>
+    </div>
+  </div>
+
+</div>
