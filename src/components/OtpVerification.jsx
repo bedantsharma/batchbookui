@@ -73,7 +73,7 @@ const OtpVerification = () => {
 
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/student/verify_otp', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/student/verify_otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: otp, phone: phoneNumber }),
@@ -104,7 +104,7 @@ const OtpVerification = () => {
     setResendTimer(60);
 
     try {
-      const res = await fetch('http://localhost:8000/student/generate_otp', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/student/generate_otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: phoneNumber }),
