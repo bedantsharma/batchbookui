@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -10,33 +10,12 @@ import {
   InputAdornment,
 } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
-import { auth } from '../firebaseconfig'; // Import auth instance
-import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 
 const PhoneLogin = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // Initialize reCAPTCHA verifier when the component mounts
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'invisible',
-        'callback': (response) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-          // This callback is usually not triggered for invisible reCAPTCHA unless there's a challenge.
-        },
-        'expired-callback': () => {
-          // Response expired. Ask user to solve reCAPTCHA again.
-          window.recaptchaVerifier.render().then(function(widgetId) {
-            grecaptcha.reset(widgetId);
-          });
-        }
-      });
-    }
-  }, []);
 
   const handlePhoneChange = (e) => {
     const value = e.target.value;
@@ -58,14 +37,18 @@ const PhoneLogin = () => {
 
     setIsLoading(true);
     try {
-      const fullPhoneNumber = `+91${phoneNumber}`; // Assuming Indian phone numbers
-      console.log(`Sending OTP to: ${fullPhoneNumber}`);
+      const res = await fetch('http://localhost:8000/student/generate_otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneNumber }),
+      });
 
-      const appVerifier = window.recaptchaVerifier;
-      const confirmationResult = await signInWithPhoneNumber(auth, fullPhoneNumber, appVerifier);
-      window.confirmationResult = confirmationResult; // Store confirmationResult globally or in state/context
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail || `Server error: ${res.status}`);
+      }
 
-      navigate('/otp-verification', { state: { phoneNumber: fullPhoneNumber } });
+      navigate('/otp-verification', { state: { phoneNumber } });
     } catch (err) {
       console.error('OTP send error:', err);
       setError('Failed to send OTP. Please check your number and try again. ' + err.message);
@@ -143,8 +126,6 @@ const PhoneLogin = () => {
             )}
           </Button>
         </Box>
-        {/* This div is required for reCAPTCHA */}
-        <div id="recaptcha-container" style={{ marginTop: '20px' }}></div>
       </Card>
     </Box>
   );

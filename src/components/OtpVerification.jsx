@@ -9,8 +9,6 @@ import {
   CircularProgress,
   Stack,
 } from '@mui/material';
-import { auth } from '../firebaseconfig'; // Import auth instance
-import { signInWithPhoneNumber } from 'firebase/auth';
 
 const OtpVerification = () => {
   const [otp, setOtp] = useState('');
@@ -75,13 +73,23 @@ const OtpVerification = () => {
 
     setIsLoading(true);
     try {
-      if (window.confirmationResult) {
-        await window.confirmationResult.confirm(otp);
-        // User signed in successfully.
-        navigate('/dashboard'); // Redirect to dashboard or home page
-      } else {
-        setError('Confirmation result not found. Please try sending OTP again.');
+      const res = await fetch('http://localhost:8000/student/verify_otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: otp, phone: phoneNumber }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail || `Server error: ${res.status}`);
       }
+
+      const { auth_token, refresh_token, user_id } = await res.json();
+      localStorage.setItem('auth_token', auth_token);
+      localStorage.setItem('refresh_token', refresh_token);
+      localStorage.setItem('user_id', user_id);
+
+      navigate('/dashboard');
     } catch (err) {
       console.error('OTP verification error:', err);
       setError('Failed to verify OTP. Please check the OTP and try again. ' + err.message);
@@ -93,22 +101,23 @@ const OtpVerification = () => {
   const handleResendOtp = async () => {
     setError('');
     setIsResending(true);
-    setResendTimer(60); // Reset timer
+    setResendTimer(60);
 
     try {
-      if (window.recaptchaVerifier && phoneNumber) {
-        const appVerifier = window.recaptchaVerifier;
-        const newConfirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-        window.confirmationResult = newConfirmationResult;
-        // Optionally, show a success message for resend
-      } else {
-        setError('Could not resend OTP. Please go back and try again.');
+      const res = await fetch('http://localhost:8000/student/generate_otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneNumber }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail || `Server error: ${res.status}`);
       }
     } catch (err) {
       setError('Failed to resend OTP. Please try again. ' + err.message);
       console.error('OTP resend error:', err);
-    } finally {
-      // Timer will handle setting isResending to false
+      setIsResending(false);
     }
   };
 
@@ -142,7 +151,7 @@ const OtpVerification = () => {
           Verify OTP
         </Typography>
         <Typography variant="body2" color="text.secondary" paragraph>
-          An OTP has been sent to <Typography component="span" color="primary" fontWeight="bold">{phoneNumber}</Typography>. Please enter it below.
+          An OTP has been sent to <Typography component="span" color="primary" fontWeight="bold">+91 {phoneNumber}</Typography>. Please enter it below.
         </Typography>
 
         <Box component="form" onSubmit={handleVerifyOtp} sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -158,6 +167,9 @@ const OtpVerification = () => {
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 inputProps={{
                   maxLength: 1,
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                  autoComplete: 'one-time-code',
                   style: { textAlign: 'center', fontSize: '1.5rem', width: '1.5em' },
                 }}
                 sx={{
