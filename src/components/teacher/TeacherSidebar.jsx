@@ -1,6 +1,6 @@
 // src/components/teacher/TeacherSidebar.jsx
 import React from 'react';
-import C, { fonts, radius } from '../../theme/colors';
+import C, { fonts } from '../../theme/colors';
 import { I } from '../shared/DashboardIcons';
 import { Avatar } from '../shared/DashboardWidgets';
 import { OWNER } from '../../data/teacherMockData';

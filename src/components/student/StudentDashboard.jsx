@@ -25,7 +25,7 @@ function StudentSidebar() {
         const Ico = it.icon;
         const on = it.id === 'home';
         return (
-          <button key={it.id} style={{ background: on ? C.primary15 : 'transparent', border: 'none', borderRadius: 10, cursor: 'not-allowed', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 12, color: on ? C.primary : C.text2, fontFamily: fonts.sans, fontSize: 13, fontWeight: on ? 600 : 500, opacity: on ? 1 : 0.5 }}>
+          <button key={it.id} style={{ background: on ? C.primary15 : 'transparent', border: 'none', borderRadius: 10, cursor: on ? 'default' : 'not-allowed', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 12, color: on ? C.primary : C.text2, fontFamily: fonts.sans, fontSize: 13, fontWeight: on ? 600 : 500, opacity: on ? 1 : 0.5 }}>
             <Ico size={18}/><span>{it.label}</span>
           </button>
         );
@@ -41,7 +41,7 @@ function StudentBottomNav() {
         const Ico = it.icon;
         const on = it.id === 'home';
         return (
-          <button key={it.id} style={{ background: 'none', border: 'none', cursor: 'not-allowed', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '4px 14px', color: on ? C.secondary : C.text2, fontFamily: fonts.sans, opacity: on ? 1 : 0.5 }}>
+          <button key={it.id} style={{ background: 'none', border: 'none', cursor: on ? 'default' : 'not-allowed', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '4px 14px', color: on ? C.secondary : C.text2, fontFamily: fonts.sans, opacity: on ? 1 : 0.5 }}>
             <Ico size={22}/>
             <span style={{ fontSize: 10, fontWeight: on ? 600 : 500 }}>{it.label}</span>
           </button>
