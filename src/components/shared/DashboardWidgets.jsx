@@ -5,7 +5,7 @@ import { FEE_HISTORY } from '../../data/teacherMockData';
 import { I } from './DashboardIcons';
 
 export function Avatar({ name, color, size = 36, ring }) {
-  const initials = name.split(' ').slice(0, 2).map(s => s[0]).join('').toUpperCase();
+  const initials = (name || '?').split(' ').slice(0, 2).map(s => s[0]).join('').toUpperCase();
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
@@ -46,8 +46,9 @@ export function SecHead({ title, action, onAction }) {
 }
 
 export function KpiTile({ label, value, sub, icon: Ico, accent = C.primary, trend, danger, onClick }) {
+  const Tag = onClick ? 'button' : 'div';
   return (
-    <button onClick={onClick} style={{
+    <Tag onClick={onClick} style={{
       background: C.surface,
       border: `1px solid ${danger ? 'rgba(207,102,121,0.30)' : C.outlineSoft}`,
       borderRadius: radius.lg, padding: 16, textAlign: 'left', cursor: onClick ? 'pointer' : 'default',
@@ -71,7 +72,7 @@ export function KpiTile({ label, value, sub, icon: Ico, accent = C.primary, tren
       </div>
       <div style={{ fontSize: 32, fontWeight: 700, color: danger ? C.warning : C.text, letterSpacing: '-0.02em', lineHeight: 1 }}>{value}</div>
       {sub && <div style={{ fontSize: 11, color: C.text2, lineHeight: 1.3 }}>{sub}</div>}
-    </button>
+    </Tag>
   );
 }
 
@@ -126,7 +127,8 @@ export function FeeBars({ data = FEE_HISTORY, h = 140, accent = C.primary }) {
   const padT = 14, padB = 22;
   const innerH = h - padT - padB;
   return (
-    <svg viewBox={`0 0 400 ${h}`} width="100%" height={h} preserveAspectRatio="none" style={{ display: 'block', overflow: 'visible' }}>
+    <div style={{ width: '100%' }}>
+    <svg viewBox={`0 0 400 ${h}`} width="100%" height={h} style={{ display: 'block', overflow: 'visible' }}>
       {[0.25, 0.5, 0.75, 1].map((p, i) => (
         <line key={i} x1="0" x2="400" y1={padT + innerH * (1 - p)} y2={padT + innerH * (1 - p)} stroke={C.outlineSoft} strokeDasharray="2 4"/>
       ))}
@@ -148,5 +150,6 @@ export function FeeBars({ data = FEE_HISTORY, h = 140, accent = C.primary }) {
         );
       })}
     </svg>
+    </div>
   );
 }
