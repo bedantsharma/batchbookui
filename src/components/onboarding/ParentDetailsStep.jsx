@@ -2,7 +2,7 @@
 import React from 'react';
 import { Box, Typography, TextField, InputAdornment } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutlined';
 
 export default function ParentDetailsStep({ parentName, parentPhone, onChangeName, onChangePhone, errors }) {
   const handlePhone = (e) => {
