@@ -1,24 +1,28 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import PhoneLogin from './components/PhoneLogin';
 import OtpVerification from './components/OtpVerification';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline'; // Resets browser default styles
 import Dashboard from './components/Dashboard';
+import OwnerSetup from './pages/owner/OwnerSetup';
+import OwnerDashboard from './pages/owner/OwnerDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
-// Define a basic Material 3 dark theme
+// ─── BatchBook dark theme ─────────────────────────────────────────────────────
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#BB86FC', // Example Material 3 dark primary color
+      main: '#BB86FC',
     },
     secondary: {
-      main: '#03DAC6', // Example Material 3 dark secondary color
+      main: '#03DAC6',
     },
     background: {
-      default: '#121212', // Dark background
-      paper: '#1E1E1E', // Darker surface for cards, etc.
+      default: '#121212',
+      paper: '#1E1E1E',
     },
     text: {
       primary: '#FFFFFF',
@@ -31,43 +35,69 @@ const darkTheme = createTheme({
   components: {
     MuiCard: {
       styleOverrides: {
-        root: {
-          borderRadius: '16px', // Example: More rounded corners for cards
-        },
+        root: { borderRadius: '16px' },
       },
     },
     MuiButton: {
       styleOverrides: {
-        root: {
-          borderRadius: '16px', // Example: More rounded corners for buttons
-        },
+        root: { borderRadius: '16px' },
       },
     },
     MuiTextField: {
       styleOverrides: {
         root: {
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '12px', // Example: More rounded corners for text fields
-          },
+          '& .MuiOutlinedInput-root': { borderRadius: '12px' },
         },
       },
     },
   },
 });
 
-
+// ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
   return (
     <ThemeProvider theme={darkTheme}>
-      <CssBaseline /> {/* Apply a baseline CSS reset */}
-      <Router>
-        <Routes>
-          <Route path="/phone-login" element={<PhoneLogin />} />
-          <Route path="/otp-verification" element={<OtpVerification />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/" element={<PhoneLogin />} />
-        </Routes>
-      </Router>
+      <CssBaseline />
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* ── Public routes ─────────────────────────────────── */}
+            <Route path="/phone-login" element={<PhoneLogin />} />
+            <Route path="/otp-verification" element={<OtpVerification />} />
+
+            {/* ── Student routes (protected) ─────────────────────── */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ── Owner routes (protected) ───────────────────────── */}
+            <Route
+              path="/owner/setup"
+              element={
+                <ProtectedRoute>
+                  <OwnerSetup />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/owner/dashboard"
+              element={
+                <ProtectedRoute>
+                  <OwnerDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ── Root redirect ──────────────────────────────────── */}
+            <Route path="/" element={<Navigate to="/phone-login" replace />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
