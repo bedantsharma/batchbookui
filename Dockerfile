@@ -14,7 +14,10 @@ COPY package.json package-lock.json ./
 # ── Dev stage ─────────────────────────────────────────────────────
 FROM base AS dev
 
-RUN npm ci
+# --mount=type=cache keeps npm's download cache on the host between builds.
+# Packages that haven't changed are served from the cache, not the network.
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --cache /root/.npm
 
 # Source code is volume-mounted at runtime, not baked in.
 # node_modules is kept inside the container via an anonymous volume
@@ -31,7 +34,8 @@ FROM base AS builder
 ARG VITE_API_URL=http://localhost:8000
 ENV VITE_API_URL=$VITE_API_URL
 
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --cache /root/.npm
 
 COPY . .
 RUN npm run build
