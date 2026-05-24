@@ -9,7 +9,15 @@ import {
   CircularProgress,
   Stack,
 } from '@mui/material';
+import { supabase } from '../lib/supabaseClient';
 
+/**
+ * OtpVerification — reads the 6-digit OTP entered by the user and verifies
+ * it with Supabase. On success, Supabase automatically sets the session;
+ * the AuthContext picks it up and the user is redirected to /dashboard.
+ *
+ * Expects router state: { phoneNumber: "+91XXXXXXXXXX" }
+ */
 const OtpVerification = () => {
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -20,44 +28,49 @@ const OtpVerification = () => {
   const navigate = useNavigate();
   const phoneNumber = location.state?.phoneNumber;
 
-  // Refs for each OTP input field
+  // One ref per digit input
   const otpRefs = useRef(Array(6).fill(null).map(() => React.createRef()));
 
+  // Countdown timer for resend button
   useEffect(() => {
     if (!phoneNumber) {
-      // If phone number is not available, redirect to phone login
       navigate('/phone-login');
+      return;
     }
 
-    let timer;
-    if (isResending && resendTimer > 0) {
-      timer = setInterval(() => {
-        setResendTimer((prev) => prev - 1);
-      }, 1000);
-    } else if (resendTimer === 0) {
-      setIsResending(false);
+    if (!isResending || resendTimer <= 0) {
+      if (resendTimer === 0) setIsResending(false);
+      return;
     }
 
+    const timer = setInterval(() => {
+      setResendTimer((prev) => prev - 1);
+    }, 1000);
     return () => clearInterval(timer);
   }, [phoneNumber, navigate, resendTimer, isResending]);
 
   const handleOtpChange = (index, value) => {
-    const newOtpArray = otp.split('');
-    newOtpArray[index] = value.slice(-1); // Take only the last character if pasted
-    const updatedOtp = newOtpArray.join('');
-    setOtp(updatedOtp);
+    const digits = otp.split('');
+    digits[index] = value.slice(-1);
+    const updated = digits.join('');
+    setOtp(updated);
 
-    // Move focus to the next input if a digit was entered and it's not the last field
-    if (value && index < 5 && otpRefs.current[index + 1].current) {
+    // Auto-advance focus
+    if (value && index < 5 && otpRefs.current[index + 1]?.current) {
       otpRefs.current[index + 1].current.focus();
     }
-    if (error && updatedOtp.length === 6) {
+    if (error && updated.length === 6) {
       setError('');
     }
   };
 
   const handleKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0 && otpRefs.current[index - 1].current) {
+    if (
+      e.key === 'Backspace' &&
+      !otp[index] &&
+      index > 0 &&
+      otpRefs.current[index - 1]?.current
+    ) {
       otpRefs.current[index - 1].current.focus();
     }
   };
@@ -73,26 +86,23 @@ const OtpVerification = () => {
 
     setIsLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/student/verify_otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: otp, phone: phoneNumber }),
+      const { error: supabaseError } = await supabase.auth.verifyOtp({
+        phone: phoneNumber,
+        token: otp,
+        type: 'sms',
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || `Server error: ${res.status}`);
+      if (supabaseError) {
+        throw supabaseError;
       }
 
-      const { auth_token, refresh_token, user_id } = await res.json();
-      localStorage.setItem('auth_token', auth_token);
-      localStorage.setItem('refresh_token', refresh_token);
-      localStorage.setItem('user_id', user_id);
-
+      // Supabase sets the session automatically; navigate to dashboard.
       navigate('/dashboard');
     } catch (err) {
       console.error('OTP verification error:', err);
-      setError('Failed to verify OTP. Please check the OTP and try again. ' + err.message);
+      setError(
+        err.message || 'Failed to verify OTP. Please check the OTP and try again.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -104,25 +114,21 @@ const OtpVerification = () => {
     setResendTimer(60);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/student/generate_otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneNumber }),
+      const { error: supabaseError } = await supabase.auth.signInWithOtp({
+        phone: phoneNumber,
       });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || `Server error: ${res.status}`);
+      if (supabaseError) {
+        throw supabaseError;
       }
     } catch (err) {
-      setError('Failed to resend OTP. Please try again. ' + err.message);
+      setError(err.message || 'Failed to resend OTP. Please try again.');
       console.error('OTP resend error:', err);
       setIsResending(false);
     }
   };
 
   if (!phoneNumber) {
-    return null; // Or a loading spinner, or redirect immediately
+    return null;
   }
 
   return (
@@ -147,42 +153,56 @@ const OtpVerification = () => {
           bgcolor: 'background.paper',
         }}
       >
-        <Typography variant="h5" component="h1" gutterBottom sx={{ color: 'text.primary', fontWeight: 'bold' }}>
+        <Typography
+          variant="h5"
+          component="h1"
+          gutterBottom
+          sx={{ color: 'text.primary', fontWeight: 'bold' }}
+        >
           Verify OTP
         </Typography>
         <Typography variant="body2" color="text.secondary" paragraph>
-          An OTP has been sent to <Typography component="span" color="primary" fontWeight="bold">+91 {phoneNumber}</Typography>. Please enter it below.
+          An OTP has been sent to{' '}
+          <Typography component="span" color="primary" fontWeight="bold">
+            {phoneNumber}
+          </Typography>
+          . Please enter it below.
         </Typography>
 
-        <Box component="form" onSubmit={handleVerifyOtp} sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <Box
+          component="form"
+          onSubmit={handleVerifyOtp}
+          sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}
+        >
           <Stack direction="row" spacing={1} justifyContent="center">
-            {Array(6).fill(0).map((_, index) => (
-              <TextField
-                key={index}
-                inputRef={otpRefs.current[index]}
-                variant="outlined"
-                size="medium"
-                value={otp[index] || ''}
-                onChange={(e) => handleOtpChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                inputProps={{
-                  maxLength: 1,
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  autoComplete: 'one-time-code',
-                  style: { textAlign: 'center', fontSize: '1.5rem', width: '1.5em' },
-                }}
-                sx={{
-                  width: 50,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '8px',
-                  },
-                }}
-                error={!!error}
-                disabled={isLoading || isResending}
-              />
-            ))}
+            {Array(6)
+              .fill(0)
+              .map((_, index) => (
+                <TextField
+                  key={index}
+                  inputRef={otpRefs.current[index]}
+                  variant="outlined"
+                  size="medium"
+                  value={otp[index] || ''}
+                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  inputProps={{
+                    maxLength: 1,
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    autoComplete: 'one-time-code',
+                    style: { textAlign: 'center', fontSize: '1.5rem', width: '1.5em' },
+                  }}
+                  sx={{
+                    width: 50,
+                    '& .MuiOutlinedInput-root': { borderRadius: '8px' },
+                  }}
+                  error={!!error}
+                  disabled={isLoading || isResending}
+                />
+              ))}
           </Stack>
+
           {error && (
             <Typography color="error" variant="body2" sx={{ mt: 1 }}>
               {error}
@@ -198,15 +218,11 @@ const OtpVerification = () => {
             disabled={isLoading || otp.length !== 6}
             sx={{ mt: 2, py: 1.5, borderRadius: 2 }}
           >
-            {isLoading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              'Verify OTP'
-            )}
+            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Verify OTP'}
           </Button>
 
           <Box sx={{ textAlign: 'center', mt: 2 }}>
-            {resendTimer > 0 && isResending ? (
+            {isResending && resendTimer > 0 ? (
               <Typography variant="body2" color="text.secondary">
                 Resend OTP in {resendTimer}s
               </Typography>

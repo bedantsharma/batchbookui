@@ -10,7 +10,13 @@ import {
   InputAdornment,
 } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
+import { supabase } from '../lib/supabaseClient';
 
+/**
+ * PhoneLogin — collects a 10-digit Indian mobile number and triggers
+ * a Supabase SMS OTP. On success, navigates to /otp-verification passing
+ * the E.164 phone number via router state.
+ */
 const PhoneLogin = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -18,10 +24,9 @@ const PhoneLogin = () => {
   const navigate = useNavigate();
 
   const handlePhoneChange = (e) => {
-    const value = e.target.value;
-    const cleanedValue = value.replace(/\D/g, '').substring(0, 10);
-    setPhoneNumber(cleanedValue);
-    if (error && cleanedValue.length === 10) {
+    const cleaned = e.target.value.replace(/\D/g, '').substring(0, 10);
+    setPhoneNumber(cleaned);
+    if (error && cleaned.length === 10) {
       setError('');
     }
   };
@@ -37,21 +42,21 @@ const PhoneLogin = () => {
 
     setIsLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/student/generate_otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phoneNumber }),
+      const fullPhone = `+91${phoneNumber}`;
+      const { error: supabaseError } = await supabase.auth.signInWithOtp({
+        phone: fullPhone,
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || `Server error: ${res.status}`);
+      if (supabaseError) {
+        throw supabaseError;
       }
 
-      navigate('/otp-verification', { state: { phoneNumber } });
+      navigate('/otp-verification', { state: { phoneNumber: fullPhone } });
     } catch (err) {
       console.error('OTP send error:', err);
-      setError('Failed to send OTP. Please check your number and try again. ' + err.message);
+      setError(
+        err.message || 'Failed to send OTP. Please check your number and try again.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -79,14 +84,23 @@ const PhoneLogin = () => {
           bgcolor: 'background.paper',
         }}
       >
-        <Typography variant="h5" component="h1" gutterBottom sx={{ color: 'text.primary', fontWeight: 'bold' }}>
+        <Typography
+          variant="h5"
+          component="h1"
+          gutterBottom
+          sx={{ color: 'text.primary', fontWeight: 'bold' }}
+        >
           Login with Phone
         </Typography>
         <Typography variant="body2" color="text.secondary" paragraph>
           Enter your 10-digit Indian phone number to receive an OTP.
         </Typography>
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}
+        >
           <TextField
             id="phoneNumber"
             label="Phone Number"
@@ -119,11 +133,7 @@ const PhoneLogin = () => {
             disabled={isLoading}
             sx={{ mt: 2, py: 1.5, borderRadius: 2 }}
           >
-            {isLoading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              'Get OTP'
-            )}
+            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Get OTP'}
           </Button>
         </Box>
       </Card>
