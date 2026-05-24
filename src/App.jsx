@@ -2,11 +2,19 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
 import LandingPage from './components/LandingPage';
 import NotFoundPage from './components/NotFoundPage';
+import PhoneLogin from './components/PhoneLogin';
+import OtpVerification from './components/OtpVerification';
 import OnboardingWizard from './components/onboarding/OnboardingWizard';
 import TeacherDashboard from './components/teacher/TeacherDashboard';
 import StudentDashboard from './components/student/StudentDashboard';
+import OwnerDashboard from './pages/owner/OwnerDashboard';
+import OwnerSetup from './pages/owner/OwnerSetup';
 
 const darkTheme = createTheme({
   palette: {
@@ -34,20 +42,43 @@ function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <Router>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/onboarding" element={<OnboardingWizard />} />
-          <Route path="/dashboard/teacher" element={<TeacherDashboard />} />
-          <Route path="/dashboard/student" element={<StudentDashboard />} />
-          {/* Legacy redirects */}
-          <Route path="/phone-login" element={<Navigate to="/" replace />} />
-          <Route path="/otp-verification" element={<Navigate to="/" replace />} />
-          <Route path="/dashboard" element={<Navigate to="/" replace />} />
-          {/* Catch-all */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* ── Public routes ─────────────────────────────────── */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/phone-login" element={<PhoneLogin />} />
+            <Route path="/otp-verification" element={<OtpVerification />} />
+            <Route path="/onboarding" element={<OnboardingWizard />} />
+
+            {/* ── Owner protected routes ────────────────────────── */}
+            <Route
+              path="/owner/setup"
+              element={<ProtectedRoute><OwnerSetup /></ProtectedRoute>}
+            />
+            <Route
+              path="/owner/dashboard"
+              element={<ProtectedRoute><OwnerDashboard /></ProtectedRoute>}
+            />
+
+            {/* ── Student / Teacher protected routes ────────────── */}
+            <Route
+              path="/dashboard/teacher"
+              element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>}
+            />
+            <Route
+              path="/dashboard/student"
+              element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>}
+            />
+
+            {/* ── Legacy redirect ───────────────────────────────── */}
+            <Route path="/dashboard" element={<Navigate to="/" replace />} />
+
+            {/* ── Catch-all ─────────────────────────────────────── */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

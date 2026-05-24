@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button, CircularProgress, InputAdornment } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
+import { supabase } from '../../lib/supabaseClient';
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
@@ -60,10 +61,16 @@ export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone 
         body: JSON.stringify({ phone, token: otp }),
       });
       if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || `Error ${res.status}`); }
-      const { auth_token, refresh_token, user_id } = await res.json();
-      localStorage.setItem('auth_token', auth_token);
-      localStorage.setItem('refresh_token', refresh_token);
-      localStorage.setItem('user_id', user_id);
+      const { auth_token, refresh_token } = await res.json();
+
+      // Bridge the backend Supabase JWT into the Supabase JS client.
+      // AuthContext will pick up the session via onAuthStateChange.
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: auth_token,
+        refresh_token: refresh_token,
+      });
+      if (sessionError) throw sessionError;
+
       onSuccess(phone);
     } catch (err) {
       setError('OTP verification failed: ' + err.message);

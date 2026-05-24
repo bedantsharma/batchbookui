@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signOut } from 'firebase/auth';
-import { auth } from '../firebaseconfig';
+import { useAuth } from '../context/AuthContext';
 import {
   getStudentProfile,
   getAttendance,
@@ -429,6 +428,7 @@ function ProfileTab({ profile, onLogout }) {
 // ─── Dashboard (root) ─────────────────────────────────────────────────────────
 export default function Dashboard() {
   const navigate   = useNavigate();
+  const { signOut } = useAuth();
   const [tab, setTab]           = useState('home');
   const [profile, setProfile]   = useState(null);
   const [attendance, setAtt]    = useState(null);
@@ -443,9 +443,9 @@ export default function Dashboard() {
   }, []);
 
   const handleLogout = useCallback(async () => {
-    try { await signOut(auth); } catch (_) {}
+    try { await signOut(); } catch (_) {}
     navigate('/');
-  }, [navigate]);
+  }, [navigate, signOut]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: T.bg, fontFamily: T.sans, color: T.fg1, overflowX: 'hidden' }}>

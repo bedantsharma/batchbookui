@@ -37,7 +37,7 @@ const PhoneLogin = () => {
 
     setIsLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/student/generate_otp`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/owner/generate_otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: phoneNumber }),
