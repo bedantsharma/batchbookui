@@ -1,71 +1,51 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import PhoneLogin from './components/PhoneLogin';
-import OtpVerification from './components/OtpVerification';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline'; // Resets browser default styles
-import Dashboard from './components/Dashboard';
+import CssBaseline from '@mui/material/CssBaseline';
+import LandingPage from './components/LandingPage';
+import NotFoundPage from './components/NotFoundPage';
+import OnboardingWizard from './components/onboarding/OnboardingWizard';
+import TeacherDashboard from './components/teacher/TeacherDashboard';
+import StudentDashboard from './components/student/StudentDashboard';
 
-// Define a basic Material 3 dark theme
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
-    primary: {
-      main: '#BB86FC', // Example Material 3 dark primary color
-    },
-    secondary: {
-      main: '#03DAC6', // Example Material 3 dark secondary color
-    },
-    background: {
-      default: '#121212', // Dark background
-      paper: '#1E1E1E', // Darker surface for cards, etc.
-    },
-    text: {
-      primary: '#FFFFFF',
-      secondary: '#B0B0B0',
-    },
+    primary: { main: '#BB86FC' },
+    secondary: { main: '#03DAC6' },
+    background: { default: '#121212', paper: '#1E1E1E' },
+    text: { primary: '#FFFFFF', secondary: '#B0B0B0' },
   },
   typography: {
     fontFamily: "'DM Sans', system-ui, sans-serif",
   },
   components: {
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: '16px', // Example: More rounded corners for cards
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: '16px', // Example: More rounded corners for buttons
-        },
-      },
-    },
+    MuiCard: { styleOverrides: { root: { borderRadius: '16px' } } },
+    MuiButton: { styleOverrides: { root: { borderRadius: '16px' } } },
     MuiTextField: {
       styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '12px', // Example: More rounded corners for text fields
-          },
-        },
+        root: { '& .MuiOutlinedInput-root': { borderRadius: '12px' } },
       },
     },
   },
 });
 
-
 function App() {
   return (
     <ThemeProvider theme={darkTheme}>
-      <CssBaseline /> {/* Apply a baseline CSS reset */}
+      <CssBaseline />
       <Router>
         <Routes>
-          <Route path="/phone-login" element={<PhoneLogin />} />
-          <Route path="/otp-verification" element={<OtpVerification />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/" element={<PhoneLogin />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/onboarding" element={<OnboardingWizard />} />
+          <Route path="/dashboard/teacher" element={<TeacherDashboard />} />
+          <Route path="/dashboard/student" element={<StudentDashboard />} />
+          {/* Legacy redirects */}
+          <Route path="/phone-login" element={<Navigate to="/" replace />} />
+          <Route path="/otp-verification" element={<Navigate to="/" replace />} />
+          <Route path="/dashboard" element={<Navigate to="/" replace />} />
+          {/* Catch-all */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
     </ThemeProvider>
