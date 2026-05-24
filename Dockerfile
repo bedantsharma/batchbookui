@@ -24,8 +24,9 @@ RUN --mount=type=cache,target=/root/.npm \
 # (declared in docker-compose.dev.yml) so the host mount doesn't clobber it.
 
 EXPOSE 5173
-# --host 0.0.0.0 makes Vite reachable from outside the container
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Run npm install at startup to sync any package.json changes (e.g. new deps, removed deps),
+# then start Vite. --host 0.0.0.0 makes it reachable from outside the container.
+CMD ["sh", "-c", "npm install && npm run dev -- --host 0.0.0.0"]
 
 # ── Builder stage (prod only) ─────────────────────────────────────
 FROM base AS builder
