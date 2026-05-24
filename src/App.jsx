@@ -1,103 +1,53 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import PhoneLogin from './components/PhoneLogin';
-import OtpVerification from './components/OtpVerification';
-import Dashboard from './components/Dashboard';
-import OwnerSetup from './pages/owner/OwnerSetup';
-import OwnerDashboard from './pages/owner/OwnerDashboard';
-import ProtectedRoute from './components/ProtectedRoute';
-import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import LandingPage from './components/LandingPage';
+import NotFoundPage from './components/NotFoundPage';
+import OnboardingWizard from './components/onboarding/OnboardingWizard';
+import TeacherDashboard from './components/teacher/TeacherDashboard';
+import StudentDashboard from './components/student/StudentDashboard';
 
-// ─── BatchBook dark theme ─────────────────────────────────────────────────────
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
-    primary: {
-      main: '#BB86FC',
-    },
-    secondary: {
-      main: '#03DAC6',
-    },
-    background: {
-      default: '#121212',
-      paper: '#1E1E1E',
-    },
-    text: {
-      primary: '#FFFFFF',
-      secondary: '#B0B0B0',
-    },
+    primary: { main: '#BB86FC' },
+    secondary: { main: '#03DAC6' },
+    background: { default: '#121212', paper: '#1E1E1E' },
+    text: { primary: '#FFFFFF', secondary: '#B0B0B0' },
   },
   typography: {
     fontFamily: "'DM Sans', system-ui, sans-serif",
   },
   components: {
-    MuiCard: {
-      styleOverrides: {
-        root: { borderRadius: '16px' },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: { borderRadius: '16px' },
-      },
-    },
+    MuiCard: { styleOverrides: { root: { borderRadius: '16px' } } },
+    MuiButton: { styleOverrides: { root: { borderRadius: '16px' } } },
     MuiTextField: {
       styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': { borderRadius: '12px' },
-        },
+        root: { '& .MuiOutlinedInput-root': { borderRadius: '12px' } },
       },
     },
   },
 });
 
-// ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <AuthProvider>
-        <Router>
-          <Routes>
-            {/* ── Public routes ─────────────────────────────────── */}
-            <Route path="/phone-login" element={<PhoneLogin />} />
-            <Route path="/otp-verification" element={<OtpVerification />} />
-
-            {/* ── Student routes (protected) ─────────────────────── */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* ── Owner routes (protected) ───────────────────────── */}
-            <Route
-              path="/owner/setup"
-              element={
-                <ProtectedRoute>
-                  <OwnerSetup />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/owner/dashboard"
-              element={
-                <ProtectedRoute>
-                  <OwnerDashboard />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* ── Root redirect ──────────────────────────────────── */}
-            <Route path="/" element={<Navigate to="/phone-login" replace />} />
-          </Routes>
-        </Router>
-      </AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/onboarding" element={<OnboardingWizard />} />
+          <Route path="/dashboard/teacher" element={<TeacherDashboard />} />
+          <Route path="/dashboard/student" element={<StudentDashboard />} />
+          {/* Legacy redirects */}
+          <Route path="/phone-login" element={<Navigate to="/" replace />} />
+          <Route path="/otp-verification" element={<Navigate to="/" replace />} />
+          <Route path="/dashboard" element={<Navigate to="/" replace />} />
+          {/* Catch-all */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 }
