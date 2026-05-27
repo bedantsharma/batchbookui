@@ -19,6 +19,14 @@ vi.mock('../lib/supabaseClient', () => ({
   },
 }));
 
+// ─── Mock the real page components so this test is a unit test of the shell ──
+vi.mock('../pages/owner/BatchesPage', () => ({
+  default: () => <div data-testid="batches-page">Batches Page</div>,
+}));
+vi.mock('../pages/owner/StudentsPage', () => ({
+  default: () => <div data-testid="students-page">Students Page</div>,
+}));
+
 // ─── Mock matchMedia (used by MUI useMediaQuery) ──────────────────────────────
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -84,27 +92,26 @@ describe('OwnerDashboard', () => {
     });
   });
 
-  it('shows the Students section content by default (description in main area)', async () => {
+  it('shows the Batches page by default (default active section is batches)', async () => {
     renderDashboard();
     await waitFor(() => {
-      expect(screen.getByText(/manage enrolled students/i)).toBeInTheDocument();
+      expect(screen.getByTestId('batches-page')).toBeInTheDocument();
     });
   });
 
-  it('switches to Batches section when clicking Batches nav item', async () => {
+  it('switches to Students section (real page) when clicking Students nav item', async () => {
     renderDashboard();
-    await waitFor(() => screen.getAllByText('Batches'));
+    await waitFor(() => screen.getAllByText('Students'));
 
-    // Click the first match (the sidebar nav item)
-    fireEvent.click(screen.getAllByText('Batches')[0]);
+    // Click the sidebar nav item (index 0)
+    fireEvent.click(screen.getAllByText('Students')[0]);
 
     await waitFor(() => {
-      // Main content should now show Batches description
-      expect(screen.getByText(/manage class batches/i)).toBeInTheDocument();
+      expect(screen.getByTestId('students-page')).toBeInTheDocument();
     });
   });
 
-  it('switches to Fees section when clicking Fees nav item', async () => {
+  it('switches to Fees section (coming soon placeholder) when clicking Fees nav item', async () => {
     renderDashboard();
     await waitFor(() => screen.getAllByText('Fees'));
 
@@ -115,7 +122,7 @@ describe('OwnerDashboard', () => {
     });
   });
 
-  it('switches to Attendance section when clicking Attendance nav item', async () => {
+  it('switches to Attendance section (coming soon placeholder) when clicking Attendance nav item', async () => {
     renderDashboard();
     await waitFor(() => screen.getAllByText('Attendance'));
 
