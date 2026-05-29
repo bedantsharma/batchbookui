@@ -22,6 +22,7 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../context/AuthContext';
+import FeesPage from './FeesPage';
 
 // ─── Design tokens (matches existing Dashboard palette) ───────────────────────
 const T = {
@@ -212,8 +213,8 @@ function SidebarContent({ activeSection, onSectionChange, onLogout }) {
   );
 }
 
-// ─── Main content area ────────────────────────────────────────────────────────
-function MainContent({ section }) {
+// ─── Placeholder for sections not yet implemented ─────────────────────────────
+function ComingSoonPlaceholder({ section }) {
   const sectionMeta = NAV_ITEMS.find((n) => n.id === section);
 
   return (
@@ -230,7 +231,6 @@ function MainContent({ section }) {
         fontFamily: T.sans,
       }}
     >
-      {/* Section icon */}
       <Box
         sx={{
           width: 72,
@@ -246,10 +246,7 @@ function MainContent({ section }) {
       >
         {sectionMeta?.icon}
       </Box>
-
-      <Typography
-        sx={{ fontSize: 20, fontWeight: 700, color: T.fg1, fontFamily: T.sans }}
-      >
+      <Typography sx={{ fontSize: 20, fontWeight: 700, color: T.fg1, fontFamily: T.sans }}>
         {sectionMeta?.label ?? 'Dashboard'}
       </Typography>
       <Typography sx={{ fontSize: 14, color: T.fg2, fontFamily: T.sans }}>
@@ -271,6 +268,15 @@ function MainContent({ section }) {
       </Typography>
     </Box>
   );
+}
+
+// ─── Main content area ────────────────────────────────────────────────────────
+function MainContent({ section }) {
+  if (section === 'fees') {
+    return <FeesPage />;
+  }
+
+  return <ComingSoonPlaceholder section={section} />;
 }
 
 // ─── OwnerDashboard (root) ────────────────────────────────────────────────────

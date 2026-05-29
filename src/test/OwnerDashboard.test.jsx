@@ -105,13 +105,31 @@ describe('OwnerDashboard', () => {
   });
 
   it('switches to Fees section when clicking Fees nav item', async () => {
+    // FeesPage is now rendered for the fees section — it renders "Fee Management" heading
+    // Mock the service calls FeesPage makes on mount
+    vi.mock('../services/ownerService', () => ({
+      getBatches: vi.fn().mockResolvedValue([]),
+      getFeeDashboard: vi.fn().mockResolvedValue({
+        total_due: '0',
+        total_collected: '0',
+        total_pending: '0',
+        collection_rate: 0,
+        records: [],
+      }),
+      getFeeStructure: vi.fn(),
+      getBatchFees: vi.fn(),
+      setupFeeStructure: vi.fn(),
+      generateMonthlyRecords: vi.fn(),
+      markPayment: vi.fn(),
+    }));
+
     renderDashboard();
     await waitFor(() => screen.getAllByText('Fees'));
 
     fireEvent.click(screen.getAllByText('Fees')[0]);
 
     await waitFor(() => {
-      expect(screen.getByText(/track fee collection/i)).toBeInTheDocument();
+      expect(screen.getByText('Fee Management')).toBeInTheDocument();
     });
   });
 
