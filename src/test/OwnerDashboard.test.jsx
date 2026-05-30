@@ -19,6 +19,13 @@ vi.mock('../lib/supabaseClient', () => ({
   },
 }));
 
+// ─── Mock ownerService (prevents real API calls from AttendancePage) ───────────
+vi.mock('../services/ownerService', () => ({
+  getBatches: vi.fn().mockResolvedValue([]),
+  getEnrollmentsByBatch: vi.fn().mockResolvedValue([]),
+  getBatchSessions: vi.fn().mockResolvedValue([]),
+}));
+
 // ─── Mock matchMedia (used by MUI useMediaQuery) ──────────────────────────────
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -121,8 +128,9 @@ describe('OwnerDashboard', () => {
 
     fireEvent.click(screen.getAllByText('Attendance')[0]);
 
+    // AttendancePage renders with "No batches found" empty state when API returns []
     await waitFor(() => {
-      expect(screen.getByText(/mark class attendance/i)).toBeInTheDocument();
+      expect(screen.getByText(/no batches found/i)).toBeInTheDocument();
     });
   });
 
