@@ -4,6 +4,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import LandingPage from './components/LandingPage';
@@ -40,10 +42,12 @@ const darkTheme = createTheme({
 
 function App() {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <AuthProvider>
-        <Router>
+    <ErrorBoundary>
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <ToastProvider>
+          <AuthProvider>
+            <Router>
           <Routes>
             {/* ── Public routes ─────────────────────────────────── */}
             <Route path="/" element={<LandingPage />} />
@@ -77,9 +81,11 @@ function App() {
             {/* ── Catch-all ─────────────────────────────────────── */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
-        </Router>
-      </AuthProvider>
-    </ThemeProvider>
+            </Router>
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
