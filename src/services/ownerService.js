@@ -155,7 +155,14 @@ export async function createStudent(studentData) {
  * }} params
  * @returns {Promise<{ student: StudentResponse, enrollment: EnrollmentResponse }>}
  */
-export async function addStudentAndEnroll({ name, phone_number, email, batch_id, due_day, first_month_amount }) {
+export async function addStudentAndEnroll({
+  name,
+  phone_number,
+  email,
+  batch_id,
+  due_day,
+  first_month_amount,
+}) {
   const student = await createStudent({ name, phone_number, email });
   const enrollment = await enrollStudent({
     student_id: student.id,
@@ -164,4 +171,48 @@ export async function addStudentAndEnroll({ name, phone_number, email, batch_id,
     first_month_amount: first_month_amount != null ? Number(first_month_amount) : undefined,
   });
   return { student, enrollment };
+}
+
+// ─── Fee API (/fee/*) ─────────────────────────────────────────────────────────
+
+/** @param {string} month - "YYYY-MM" */
+export async function getFeeDashboard(month) {
+  const { data } = await api.get('/fee/dashboard', { params: { month } });
+  return data;
+}
+
+/** @param {number} batchId @param {string} month - "YYYY-MM" */
+export async function getBatchFees(batchId, month) {
+  const { data } = await api.get(`/fee/batch/${batchId}`, { params: { month } });
+  return data;
+}
+
+/** @param {number} batchId */
+export async function getFeeStructure(batchId) {
+  const { data } = await api.get(`/fee/structure/${batchId}`);
+  return data;
+}
+
+/** @param {number} batchId @param {number} monthlyAmount */
+export async function setupFeeStructure(batchId, monthlyAmount) {
+  const { data } = await api.post('/fee/structure', {
+    batch_id: batchId,
+    monthly_amount: monthlyAmount,
+  });
+  return data;
+}
+
+/** @param {number} batchId @param {string} month - "YYYY-MM" */
+export async function generateMonthlyRecords(batchId, month) {
+  const { data } = await api.post(`/fee/generate/${batchId}`, null, { params: { month } });
+  return data;
+}
+
+/** @param {number} recordId @param {number} amountPaid @param {string|null} reference */
+export async function markPayment(recordId, amountPaid, reference) {
+  const { data } = await api.patch(`/fee/record/${recordId}/pay`, {
+    amount_paid: amountPaid,
+    reference: reference ?? null,
+  });
+  return data;
 }

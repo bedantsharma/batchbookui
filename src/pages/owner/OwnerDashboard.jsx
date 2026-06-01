@@ -23,6 +23,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../context/AuthContext';
 import BatchesPage from './BatchesPage';
+import FeesPage from './FeesPage';
 import StudentsPage from './StudentsPage';
 
 // ─── Design tokens (matches existing Dashboard palette) ───────────────────────
@@ -286,6 +287,10 @@ function MainContent({ section, onSectionChange, addStudentBatch }) {
 
   if (section === 'students') {
     return <StudentsPage initialBatch={addStudentBatch} />;
+  }
+
+  if (section === 'fees') {
+    return <FeesPage />;
   }
 
   return <ComingSoonPlaceholder section={section} />;

@@ -111,14 +111,14 @@ describe('OwnerDashboard', () => {
     });
   });
 
-  it('switches to Fees section (coming soon placeholder) when clicking Fees nav item', async () => {
+  it('switches to Fees section when clicking Fees nav item', async () => {
     renderDashboard();
     await waitFor(() => screen.getAllByText('Fees'));
 
     fireEvent.click(screen.getAllByText('Fees')[0]);
 
     await waitFor(() => {
-      expect(screen.getByText(/track fee collection/i)).toBeInTheDocument();
+      expect(screen.getByText('Fee Management')).toBeInTheDocument();
     });
   });
 
