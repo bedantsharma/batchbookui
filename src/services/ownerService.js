@@ -216,3 +216,37 @@ export async function markPayment(recordId, amountPaid, reference) {
   });
   return data;
 }
+
+// ─── Attendance API (/attendance/*) ──────────────────────────────────────────
+
+/** @param {{ batch_id: number, date: string, start_time: string, end_time: string, topic?: string }} sessionData */
+export async function createSession(sessionData) {
+  const { data } = await api.post('/attendance/session', sessionData);
+  return data;
+}
+
+/** @param {number} sessionId @param {number[]} presentEnrollmentIds */
+export async function markAttendance(sessionId, presentEnrollmentIds) {
+  const { data } = await api.post(`/attendance/session/${sessionId}/mark`, {
+    present_enrollment_ids: presentEnrollmentIds,
+  });
+  return data;
+}
+
+/** @param {number} sessionId */
+export async function getSessionAttendance(sessionId) {
+  const { data } = await api.get(`/attendance/session/${sessionId}`);
+  return data;
+}
+
+/** @param {number} batchId */
+export async function getBatchSessions(batchId) {
+  const { data } = await api.get(`/attendance/batch/${batchId}`);
+  return data;
+}
+
+/** @param {number} enrollmentId @param {string} month - "YYYY-MM" */
+export async function getStudentAttendanceSummary(enrollmentId, month) {
+  const { data } = await api.get(`/attendance/student/${enrollmentId}`, { params: { month } });
+  return data;
+}

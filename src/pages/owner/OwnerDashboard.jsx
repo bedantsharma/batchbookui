@@ -22,6 +22,7 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../context/AuthContext';
+import AttendancePage from './AttendancePage';
 import BatchesPage from './BatchesPage';
 import FeesPage from './FeesPage';
 import StudentsPage from './StudentsPage';
@@ -291,6 +292,10 @@ function MainContent({ section, onSectionChange, addStudentBatch }) {
 
   if (section === 'fees') {
     return <FeesPage />;
+  }
+
+  if (section === 'attendance') {
+    return <AttendancePage />;
   }
 
   return <ComingSoonPlaceholder section={section} />;

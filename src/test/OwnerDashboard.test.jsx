@@ -20,8 +20,14 @@ vi.mock('../lib/supabaseClient', () => ({
 }));
 
 // ─── Mock the real page components so this test is a unit test of the shell ──
+vi.mock('../pages/owner/AttendancePage', () => ({
+  default: () => <div data-testid="attendance-page">Attendance Page</div>,
+}));
 vi.mock('../pages/owner/BatchesPage', () => ({
   default: () => <div data-testid="batches-page">Batches Page</div>,
+}));
+vi.mock('../pages/owner/FeesPage', () => ({
+  default: () => <div data-testid="fees-page">Fee Management</div>,
 }));
 vi.mock('../pages/owner/StudentsPage', () => ({
   default: () => <div data-testid="students-page">Students Page</div>,
@@ -122,14 +128,14 @@ describe('OwnerDashboard', () => {
     });
   });
 
-  it('switches to Attendance section (coming soon placeholder) when clicking Attendance nav item', async () => {
+  it('switches to Attendance section when clicking Attendance nav item', async () => {
     renderDashboard();
     await waitFor(() => screen.getAllByText('Attendance'));
 
     fireEvent.click(screen.getAllByText('Attendance')[0]);
 
     await waitFor(() => {
-      expect(screen.getByText(/mark class attendance/i)).toBeInTheDocument();
+      expect(screen.getByTestId('attendance-page')).toBeInTheDocument();
     });
   });
 
