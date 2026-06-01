@@ -250,3 +250,17 @@ export async function getStudentAttendanceSummary(enrollmentId, month) {
   const { data } = await api.get(`/attendance/student/${enrollmentId}`, { params: { month } });
   return data;
 }
+
+// ─── Test Score API (/scores/*) ───────────────────────────────────────────────
+
+/** @param {number} enrollmentId */
+export async function getStudentScores(enrollmentId) {
+  const { data } = await api.get(`/scores/student/${enrollmentId}`);
+  return data;
+}
+
+/** @param {{ enrollment_id: number, test_name: string, subject: string, date: string, max_marks: number, obtained_marks: number }} scoreData */
+export async function createTestScore(scoreData) {
+  const { data } = await api.post('/scores/', scoreData);
+  return data;
+}

@@ -19,6 +19,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import ClassIcon from '@mui/icons-material/Class';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import EventNoteIcon from '@mui/icons-material/EventNote';
+import SchoolIcon from '@mui/icons-material/School';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../context/AuthContext';
@@ -26,6 +27,7 @@ import AttendancePage from './AttendancePage';
 import BatchesPage from './BatchesPage';
 import FeesPage from './FeesPage';
 import StudentsPage from './StudentsPage';
+import TestsPage from './TestsPage';
 
 // ─── Design tokens (matches existing Dashboard palette) ───────────────────────
 const T = {
@@ -68,6 +70,12 @@ const NAV_ITEMS = [
     label: 'Attendance',
     icon: <EventNoteIcon />,
     description: 'Mark class attendance',
+  },
+  {
+    id: 'tests',
+    label: 'Tests',
+    icon: <SchoolIcon />,
+    description: 'Track student test scores',
   },
 ];
 
@@ -296,6 +304,10 @@ function MainContent({ section, onSectionChange, addStudentBatch }) {
 
   if (section === 'attendance') {
     return <AttendancePage />;
+  }
+
+  if (section === 'tests') {
+    return <TestsPage />;
   }
 
   return <ComingSoonPlaceholder section={section} />;
