@@ -23,6 +23,9 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../context/AuthContext';
 import AttendancePage from './AttendancePage';
+import BatchesPage from './BatchesPage';
+import FeesPage from './FeesPage';
+import StudentsPage from './StudentsPage';
 
 // ─── Design tokens (matches existing Dashboard palette) ───────────────────────
 const T = {
@@ -213,7 +216,7 @@ function SidebarContent({ activeSection, onSectionChange, onLogout }) {
   );
 }
 
-// ─── Coming soon placeholder ──────────────────────────────────────────────────
+// ─── Placeholder for sections not yet implemented ─────────────────────────────
 function ComingSoonPlaceholder({ section }) {
   const sectionMeta = NAV_ITEMS.find((n) => n.id === section);
 
@@ -271,10 +274,30 @@ function ComingSoonPlaceholder({ section }) {
 }
 
 // ─── Main content area ────────────────────────────────────────────────────────
-function MainContent({ section }) {
+function MainContent({ section, onSectionChange, addStudentBatch }) {
+  if (section === 'batches') {
+    return (
+      <BatchesPage
+        onAddStudent={(batch) => {
+          // Switch to students section with the batch pre-selected
+          onSectionChange('students', batch);
+        }}
+      />
+    );
+  }
+
+  if (section === 'students') {
+    return <StudentsPage initialBatch={addStudentBatch} />;
+  }
+
+  if (section === 'fees') {
+    return <FeesPage />;
+  }
+
   if (section === 'attendance') {
     return <AttendancePage />;
   }
+
   return <ComingSoonPlaceholder section={section} />;
 }
 
@@ -295,20 +318,33 @@ export default function OwnerDashboard() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const [activeSection, setActiveSection] = useState('students');
+  const [activeSection, setActiveSection] = useState('batches');
   const [mobileOpen, setMobileOpen] = useState(false);
+  // Holds the batch to pre-select when navigating to the students section
+  const [addStudentBatch, setAddStudentBatch] = useState(null);
 
   async function handleLogout() {
     await signOut();
     navigate('/phone-login');
   }
 
+  /**
+   * Switch the active section. Optionally pass a batch to pre-select in the
+   * students section (used when owner clicks "Add Student" on a batch card).
+   */
+  function handleSectionChange(id, batch = null) {
+    setActiveSection(id);
+    if (id === 'students' && batch) {
+      setAddStudentBatch(batch);
+    } else {
+      setAddStudentBatch(null);
+    }
+    if (isMobile) setMobileOpen(false);
+  }
+
   const sidebarProps = {
     activeSection,
-    onSectionChange: (id) => {
-      setActiveSection(id);
-      if (isMobile) setMobileOpen(false);
-    },
+    onSectionChange: handleSectionChange,
     onLogout: handleLogout,
   };
 
@@ -399,7 +435,11 @@ export default function OwnerDashboard() {
           </Box>
         )}
 
-        <MainContent section={activeSection} />
+        <MainContent
+          section={activeSection}
+          onSectionChange={handleSectionChange}
+          addStudentBatch={addStudentBatch}
+        />
       </Box>
     </Box>
   );
