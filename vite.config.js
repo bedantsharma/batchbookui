@@ -17,4 +17,11 @@ export default defineConfig({
       '.ngrok.app',
     ],
   },
+  test: {
+    // Use jsdom so React components can access window / document
+    environment: 'jsdom',
+    // Run the jest-dom matchers setup before each test file
+    setupFiles: ['./src/test/setup.js'],
+    globals: true,
+  },
 });
