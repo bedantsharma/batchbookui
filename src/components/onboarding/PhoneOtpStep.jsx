@@ -61,7 +61,13 @@ export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone 
         body: JSON.stringify({ phone, token: otp }),
       });
       if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || `Error ${res.status}`); }
-      const { auth_token, refresh_token } = await res.json();
+      const { auth_token, refresh_token, children } = await res.json();
+
+      // Store the first child's ID so dashboard APIs know which student to load.
+      if (children && children.length > 0) {
+        localStorage.setItem('bb_student_id', String(children[0].id));
+        localStorage.setItem('bb_student_name', children[0].name ?? '');
+      }
 
       // Bridge the backend Supabase JWT into the Supabase JS client.
       // AuthContext will pick up the session via onAuthStateChange.
