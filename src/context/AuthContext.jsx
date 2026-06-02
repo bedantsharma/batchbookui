@@ -26,12 +26,21 @@ export function AuthProvider({ children }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      if (!session) {
+        // Session expired or revoked — clear role and student ID
+        localStorage.removeItem('bb_role');
+        localStorage.removeItem('bb_student_id');
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const signOut = () => supabase.auth.signOut();
+  const signOut = async () => {
+    localStorage.removeItem('bb_role');
+    localStorage.removeItem('bb_student_id');
+    await supabase.auth.signOut();
+  };
 
   const value = {
     session,
