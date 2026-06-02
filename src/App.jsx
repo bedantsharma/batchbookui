@@ -7,6 +7,10 @@ import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
+import OwnerRoute from './components/OwnerRoute';
+import StudentRoute from './components/StudentRoute';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 import LandingPage from './components/LandingPage';
 import NotFoundPage from './components/NotFoundPage';
@@ -58,21 +62,29 @@ function App() {
             {/* ── Owner protected routes ────────────────────────── */}
             <Route
               path="/owner/setup"
-              element={<ProtectedRoute><OwnerSetup /></ProtectedRoute>}
+              element={<OwnerRoute><OwnerSetup /></OwnerRoute>}
             />
             <Route
               path="/owner/dashboard"
-              element={<ProtectedRoute><OwnerDashboard /></ProtectedRoute>}
+              element={<OwnerRoute><OwnerDashboard /></OwnerRoute>}
             />
 
-            {/* ── Student / Teacher protected routes ────────────── */}
-            <Route
-              path="/dashboard/teacher"
-              element={<ProtectedRoute><TeacherDashboard /></ProtectedRoute>}
-            />
+            {/* ── Student protected route ───────────────────────── */}
             <Route
               path="/dashboard/student"
-              element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>}
+              element={<StudentRoute><StudentDashboard /></StudentRoute>}
+            />
+
+            {/* ── Teacher — coming soon (no auth required) ─────── */}
+            <Route
+              path="/dashboard/teacher"
+              element={
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', bgcolor: 'background.default' }}>
+                  <Typography color="text.secondary" sx={{ textAlign: 'center', maxWidth: 400, p: 4 }}>
+                    Teacher access is coming soon.<br />Ask your institute owner to invite you.
+                  </Typography>
+                </Box>
+              }
             />
 
             {/* ── Legacy redirect ───────────────────────────────── */}

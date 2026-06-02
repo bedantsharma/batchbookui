@@ -54,12 +54,9 @@ export default function OnboardingWizard() {
   const skip = () => setStep(s => s + 1);
 
   const handleOtpSuccess = (phone) => {
-    const profile = {
-      ...data,
-      teacherPhone: data.role === 'teacher' ? phone : data.teacherPhone,
-    };
+    const profile = { ...data };
     localStorage.setItem('onboarding_profile', JSON.stringify(profile));
-    navigate(data.role === 'teacher' ? '/dashboard/teacher' : '/dashboard/student');
+    navigate('/dashboard/student');
   };
 
   const renderStep = () => {
