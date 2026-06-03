@@ -46,8 +46,8 @@ export async function getStudentProfile() {
     (f) => f.status === 'NOT_PAID' || f.status === 'PARTIALLY_PAID',
   );
 
-  const batchNames = attendanceItems.map((a) => a.batch_name);
-  const subjects = attendanceItems.map((a) => a.subject);
+  const batchNames = attendanceItems.items?.map((a) => a.batch_name) ?? [];
+  const subjects = attendanceItems.items?.map((a) => a.subject) ?? [];
 
   return {
     id: studentId,
@@ -67,7 +67,7 @@ export async function getStudentProfile() {
 
 export async function getAttendance(month = CURRENT_MONTH()) {
   const studentId = getStoredStudentId();
-  if (!studentId) return { present: 0, total: 0, streak: 0, month: '' };
+  if (!studentId) return { present: 0, total: 0, streak: 0, month: '', items: [] };
 
   const { data } = await api.get('/student/me/attendance', {
     params: { student_id: studentId, month },
@@ -187,9 +187,10 @@ export async function getTodaySchedule() {
       : '';
     return {
       id: s.session_id,
+      subject: s.subject,
       batchName: s.batch_name,
       time: startFmt && endFmt ? `${startFmt}–${endFmt}` : startFmt,
-      room: s.topic ?? '',
+      topic: s.topic ?? '',
       attendanceStatus: s.attendance_status,
     };
   });

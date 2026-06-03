@@ -25,7 +25,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutlined';
 
 import { getBatches, getEnrollmentsByBatch, removeEnrollment } from '../../services/ownerService';
 import AddStudentModal from './AddStudentModal';

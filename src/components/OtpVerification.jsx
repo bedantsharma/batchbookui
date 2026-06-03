@@ -92,15 +92,21 @@ const OtpVerification = () => {
 
       const { auth_token, refresh_token } = await res.json();
 
-      // Step 2: bridge the backend Supabase JWT into the Supabase JS client
-      // AuthContext will pick up the session via onAuthStateChange
+      // Bridge backend JWT into the Supabase JS client
       const { error: sessionError } = await supabase.auth.setSession({
         access_token: auth_token,
         refresh_token: refresh_token,
       });
       if (sessionError) throw sessionError;
 
-      navigate('/owner/dashboard');
+      // Stamp owner role for OwnerRoute guard
+      localStorage.setItem('bb_role', 'owner');
+
+      // Check if owner has an institute — new owners must set one up first
+      const instRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/owner/institute`, {
+        headers: { Authorization: `Bearer ${auth_token}` },
+      });
+      navigate(instRes.ok ? '/owner/dashboard' : '/owner/setup');
     } catch (err) {
       console.error('OTP verification error:', err);
       setError(err.message || 'Failed to verify OTP. Please check the OTP and try again.');

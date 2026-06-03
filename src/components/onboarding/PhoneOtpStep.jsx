@@ -1,5 +1,5 @@
 // src/components/onboarding/PhoneOtpStep.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, TextField, Button, CircularProgress, InputAdornment } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
 import { supabase } from '../../lib/supabaseClient';
@@ -14,6 +14,7 @@ export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
+  const otpSentRef = useRef(false);
 
   // Clean countdown: a new interval fires whenever resendTimer > 0
   useEffect(() => {
@@ -46,28 +47,27 @@ export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone 
     }
   };
 
-  // Auto-send OTP when phone is pre-filled (parent flow)
+  // Auto-send OTP when phone is pre-filled (parent flow).
+  // Ref guard prevents React 18 StrictMode from double-invoking and sending two OTPs,
+  // which would cause Supabase to invalidate the first token → 401 on verify.
   useEffect(() => {
-    if (prefilled && subStep === 'otp-pending') { sendOtp(initialPhone); }
+    if (prefilled && subStep === 'otp-pending' && !otpSentRef.current) {
+      otpSentRef.current = true;
+      sendOtp(initialPhone);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const verifyOtp = async () => {
     if (otp.length !== 6) { setError('Enter the 6-digit OTP.'); return; }
     setLoading(true); setError('');
     try {
-      const res = await fetch(`${API}/student/verify_otp`, {
+      const res = await fetch(`${API}/parent/verify_otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, token: otp }),
       });
       if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || `Error ${res.status}`); }
-      const { auth_token, refresh_token, children } = await res.json();
-
-      // Store the first child's ID so dashboard APIs know which student to load.
-      if (children && children.length > 0) {
-        localStorage.setItem('bb_student_id', String(children[0].id));
-        localStorage.setItem('bb_student_name', children[0].name ?? '');
-      }
+      const { auth_token, refresh_token, children = [] } = await res.json();
 
       // Bridge the backend Supabase JWT into the Supabase JS client.
       // AuthContext will pick up the session via onAuthStateChange.
@@ -76,6 +76,13 @@ export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone 
         refresh_token: refresh_token,
       });
       if (sessionError) throw sessionError;
+
+      // Stamp student role for StudentRoute guard; store child data for dashboard
+      localStorage.setItem('bb_role', 'student');
+      if (children.length > 0) {
+        localStorage.setItem('bb_student_id', String(children[0].id));
+        localStorage.setItem('bb_student_name', children[0].name ?? '');
+      }
 
       onSuccess(phone);
     } catch (err) {
