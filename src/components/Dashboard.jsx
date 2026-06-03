@@ -6,6 +6,7 @@ import {
   getAttendance,
   getUpcomingEvents,
   getTodaySchedule,
+  getStoredStudentId,
 } from '../services/dashboardService';
 
 // ─── Design tokens (BB_THEME / Option B) ─────────────────────────────────────
@@ -427,29 +428,65 @@ function ProfileTab({ profile, onLogout }) {
 
 // ─── Dashboard (root) ─────────────────────────────────────────────────────────
 export default function Dashboard() {
-  const navigate   = useNavigate();
+  const navigate    = useNavigate();
   const { signOut } = useAuth();
   const [tab, setTab]           = useState('home');
   const [profile, setProfile]   = useState(null);
   const [attendance, setAtt]    = useState(null);
   const [events, setEvents]     = useState(null);
   const [schedule, setSchedule] = useState(null);
+  const [loadError, setLoadError] = useState(null);
 
   useEffect(() => {
-    getStudentProfile().then(setProfile);
-    getAttendance().then(setAtt);
-    getUpcomingEvents().then(setEvents);
-    getTodaySchedule().then(setSchedule);
+    if (!getStoredStudentId()) return;
+    setLoadError(null);
+    Promise.all([
+      getStudentProfile(),
+      getAttendance(),
+      getUpcomingEvents(),
+      getTodaySchedule(),
+    ])
+      .then(([p, a, e, s]) => {
+        setProfile(p);
+        setAtt(a);
+        setEvents(e);
+        setSchedule(s);
+      })
+      .catch((err) => {
+        console.error('Dashboard load error', err);
+        setLoadError('Failed to load your data. Please try again.');
+      });
   }, []);
 
   const handleLogout = useCallback(async () => {
+    localStorage.removeItem('bb_student_id');
+    localStorage.removeItem('bb_student_name');
     try { await signOut(); } catch (_) {}
     navigate('/');
   }, [navigate, signOut]);
 
+  if (!getStoredStudentId()) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: T.bg, color: T.fg2, gap: 16, padding: 24 }}>
+        <div style={{ fontSize: 16, fontWeight: 600, color: T.fg1, textAlign: 'center' }}>No student profile found</div>
+        <div style={{ fontSize: 13, color: T.fg2, textAlign: 'center' }}>Please log in again to load your dashboard.</div>
+        <button onClick={handleLogout} style={{ padding: '10px 24px', borderRadius: T.rMd, border: `1px solid ${T.primary}`, background: 'transparent', color: T.primary, cursor: 'pointer', fontFamily: T.sans, fontSize: 13, fontWeight: 600 }}>
+          Go to Login
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: T.bg, fontFamily: T.sans, color: T.fg1, overflowX: 'hidden' }}>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+      {/* ── Load error banner ──────────────────────────────── */}
+      {loadError && (
+        <div style={{ background: 'rgba(207,102,121,0.12)', border: `1px solid rgba(207,102,121,0.3)`, borderRadius: 0, padding: '10px 16px', textAlign: 'center', fontSize: 12, color: T.error }}>
+          {loadError}
+        </div>
+      )}
 
       {/* ── Gradient header ────────────────────────────────── */}
       <div style={{

@@ -77,11 +77,11 @@ export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone 
       });
       if (sessionError) throw sessionError;
 
-      // Stamp student role for StudentRoute guard
+      // Stamp student role for StudentRoute guard; store child data for dashboard
       localStorage.setItem('bb_role', 'student');
-      // Store first child's ID for dashboard API calls
       if (children.length > 0) {
         localStorage.setItem('bb_student_id', String(children[0].id));
+        localStorage.setItem('bb_student_name', children[0].name ?? '');
       }
 
       onSuccess(phone);

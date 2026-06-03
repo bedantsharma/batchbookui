@@ -17,8 +17,8 @@ import NotFoundPage from './components/NotFoundPage';
 import PhoneLogin from './components/PhoneLogin';
 import OtpVerification from './components/OtpVerification';
 import OnboardingWizard from './components/onboarding/OnboardingWizard';
+import Dashboard from './components/Dashboard';
 import TeacherDashboard from './components/teacher/TeacherDashboard';
-import StudentDashboard from './components/student/StudentDashboard';
 import OwnerDashboard from './pages/owner/OwnerDashboard';
 import OwnerSetup from './pages/owner/OwnerSetup';
 
