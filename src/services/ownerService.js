@@ -251,6 +251,17 @@ export async function getStudentAttendanceSummary(enrollmentId, month) {
   return data;
 }
 
+// ─── Owner stats (/owner/stats) ──────────────────────────────────────────────
+
+/**
+ * Fetch the three headline stats for the owner's institute.
+ * @returns {Promise<{ students_enrolled: number, fees_collected_this_month: string, avg_attendance_pct: number }>}
+ */
+export async function getOwnerStats() {
+  const { data } = await api.get('/owner/stats');
+  return data;
+}
+
 // ─── Test Score API (/scores/*) ───────────────────────────────────────────────
 
 /** @param {number} enrollmentId */
