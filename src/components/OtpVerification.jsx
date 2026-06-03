@@ -11,21 +11,8 @@ import {
 } from '@mui/material';
 import { supabase } from '../lib/supabaseClient';
 
-/**
- * OtpVerification — owner login step 2.
- *
- * Receives { phoneNumber } from router state (set by PhoneLogin).
- * Calls the backend /owner/verify_otp which:
- *   1. Verifies the OTP with Supabase
- *   2. Upserts the Owner record in the DB
- *   3. Returns { auth_token, refresh_token, aud, teacher_id }
- *
- * We then call supabase.auth.setSession() so the Supabase JS client
- * has a valid session. AuthContext picks it up via onAuthStateChange
- * and ProtectedRoute lets the user through.
- */
 const OtpVerification = () => {
-  const [otp, setOtp] = useState('');
+  const [digits, setDigits] = useState(Array(6).fill(''));
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [error, setError] = useState('');
@@ -34,8 +21,7 @@ const OtpVerification = () => {
   const navigate = useNavigate();
   const phoneNumber = location.state?.phoneNumber;
 
-  // Refs for each OTP digit input
-  const otpRefs = useRef(Array(6).fill(null).map(() => React.createRef()));
+  const inputRefs = useRef(Array.from({ length: 6 }, () => React.createRef()));
 
   useEffect(() => {
     if (!phoneNumber) {
@@ -43,27 +29,50 @@ const OtpVerification = () => {
     }
   }, [phoneNumber, navigate]);
 
-  // Countdown timer for resend button
   useEffect(() => {
     if (resendTimer <= 0) return;
     const tick = setInterval(() => setResendTimer((t) => t - 1), 1000);
     return () => clearInterval(tick);
   }, [resendTimer]);
 
+  const otp = digits.join('');
+
+  const focusBox = (index) => inputRefs.current[index]?.current?.focus();
+
   const handleOtpChange = (index, value) => {
-    const digits = otp.split('');
-    digits[index] = value.slice(-1);
-    const updated = digits.join('');
-    setOtp(updated);
-    if (value && index < 5 && otpRefs.current[index + 1].current) {
-      otpRefs.current[index + 1].current.focus();
-    }
-    if (error && updated.length === 6) setError('');
+    const digit = value.replace(/\D/g, '').slice(-1);
+    setDigits((prev) => {
+      const next = [...prev];
+      next[index] = digit;
+      return next;
+    });
+    if (digit && index < 5) focusBox(index + 1);
+    if (error) setError('');
+  };
+
+  // Paste handler — distribute all 6 digits across boxes from the pasted position
+  const handlePaste = (index, e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6 - index);
+    if (!pasted) return;
+    setDigits((prev) => {
+      const next = [...prev];
+      for (let i = 0; i < pasted.length; i++) next[index + i] = pasted[i];
+      return next;
+    });
+    const lastFilled = Math.min(index + pasted.length - 1, 5);
+    focusBox(lastFilled < 5 ? lastFilled + 1 : 5);
+    if (error) setError('');
   };
 
   const handleKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0 && otpRefs.current[index - 1].current) {
-      otpRefs.current[index - 1].current.focus();
+    if (e.key === 'Backspace' && !digits[index] && index > 0) {
+      setDigits((prev) => {
+        const next = [...prev];
+        next[index - 1] = '';
+        return next;
+      });
+      focusBox(index - 1);
     }
   };
 
@@ -71,7 +80,7 @@ const OtpVerification = () => {
     e.preventDefault();
     setError('');
 
-    if (otp.length !== 6) {
+    if (otp.length !== 6 || digits.some((d) => d === '')) {
       setError('Please enter a 6-digit OTP.');
       return;
     }
@@ -117,6 +126,7 @@ const OtpVerification = () => {
 
   const handleResendOtp = async () => {
     setError('');
+    setDigits(Array(6).fill(''));
     setResendTimer(60);
     setIsResending(true);
 
@@ -133,6 +143,7 @@ const OtpVerification = () => {
       }
     } catch (err) {
       setError('Failed to resend OTP. Please try again. ' + err.message);
+    } finally {
       setIsResending(false);
     }
   };
@@ -176,20 +187,21 @@ const OtpVerification = () => {
 
         <Box component="form" onSubmit={handleVerifyOtp} sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
           <Stack direction="row" spacing={1} justifyContent="center">
-            {Array(6).fill(0).map((_, index) => (
+            {Array.from({ length: 6 }).map((_, index) => (
               <TextField
                 key={index}
-                inputRef={otpRefs.current[index]}
+                inputRef={inputRefs.current[index]}
                 variant="outlined"
                 size="medium"
-                value={otp[index] || ''}
+                value={digits[index]}
                 onChange={(e) => handleOtpChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={(e) => handlePaste(index, e)}
                 inputProps={{
                   maxLength: 1,
                   inputMode: 'numeric',
                   pattern: '[0-9]*',
-                  autoComplete: 'one-time-code',
+                  autoComplete: index === 0 ? 'one-time-code' : 'off',
                   style: { textAlign: 'center', fontSize: '1.5rem', width: '1.5em' },
                 }}
                 sx={{
@@ -214,7 +226,7 @@ const OtpVerification = () => {
             color="primary"
             fullWidth
             size="large"
-            disabled={isLoading || otp.length !== 6}
+            disabled={isLoading || otp.length !== 6 || digits.some((d) => d === '')}
             sx={{ mt: 2, py: 1.5, borderRadius: 2 }}
           >
             {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Verify OTP'}
