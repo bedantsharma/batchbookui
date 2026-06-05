@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -23,6 +23,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../context/AuthContext';
+import { getOwnerStats } from '../../services/ownerService';
 import AttendancePage from './AttendancePage';
 import BatchesPage from './BatchesPage';
 import FeesPage from './FeesPage';
@@ -44,6 +45,45 @@ const T = {
 };
 
 const SIDEBAR_WIDTH = 240;
+
+// ─── Stats bar ────────────────────────────────────────────────────────────────
+function StatPill({ label, value, loading }) {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
+      <Typography sx={{ fontFamily: T.sans, fontSize: 14, fontWeight: 700, color: T.primary }}>
+        {loading ? '…' : value}
+      </Typography>
+      <Typography sx={{ fontFamily: T.sans, fontSize: 12, color: T.fg2 }}>{label}</Typography>
+    </Box>
+  );
+}
+
+function StatsBar({ stats, loading }) {
+  const collected = stats ? `₹${Number(stats.fees_collected_this_month).toLocaleString('en-IN')}` : '₹0';
+  const attendance = stats ? `${stats.avg_attendance_pct}%` : '0%';
+  const enrolled = stats ? String(stats.students_enrolled) : '0';
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5,
+        px: 3,
+        py: 1.25,
+        bgcolor: T.surface,
+        borderBottom: `1px solid ${T.outline}`,
+        flexWrap: 'wrap',
+      }}
+    >
+      <StatPill label="students enrolled" value={enrolled} loading={loading} />
+      <Box sx={{ width: 1, height: 14, bgcolor: T.outline }} />
+      <StatPill label="collected this month" value={collected} loading={loading} />
+      <Box sx={{ width: 1, height: 14, bgcolor: T.outline }} />
+      <StatPill label="avg attendance" value={attendance} loading={loading} />
+    </Box>
+  );
+}
 
 // ─── Navigation items ─────────────────────────────────────────────────────────
 const NAV_ITEMS = [
@@ -334,6 +374,15 @@ export default function OwnerDashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
   // Holds the batch to pre-select when navigating to the students section
   const [addStudentBatch, setAddStudentBatch] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  useEffect(() => {
+    getOwnerStats()
+      .then(setStats)
+      .catch(() => setStats(null))
+      .finally(() => setStatsLoading(false));
+  }, []);
 
   async function handleLogout() {
     await signOut();
@@ -446,6 +495,9 @@ export default function OwnerDashboard() {
             </Typography>
           </Box>
         )}
+
+        {/* Stats bar — always visible */}
+        <StatsBar stats={stats} loading={statsLoading} />
 
         <MainContent
           section={activeSection}

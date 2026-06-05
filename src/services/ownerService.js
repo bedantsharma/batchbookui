@@ -251,6 +251,13 @@ export async function getStudentAttendanceSummary(enrollmentId, month) {
   return data;
 }
 
+// ─── Owner stats (/owner/stats) ──────────────────────────────────────────────
+
+export async function getOwnerStats() {
+  const { data } = await api.get('/owner/stats');
+  return data;
+}
+
 // ─── Test Score API (/scores/*) ───────────────────────────────────────────────
 
 /** @param {number} enrollmentId */
