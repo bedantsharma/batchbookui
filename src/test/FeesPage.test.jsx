@@ -15,6 +15,7 @@ vi.mock('../services/ownerService', () => ({
   setupFeeStructure: vi.fn(),
   generateMonthlyRecords: vi.fn(),
   markPayment: vi.fn(),
+  getOwnerStats: vi.fn().mockResolvedValue({ enrolled_students: 0, fees_collected_this_month: 0, avg_attendance_this_month: 0 }),
 }));
 
 import {
