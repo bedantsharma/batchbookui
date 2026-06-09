@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -23,6 +23,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../context/AuthContext';
+import { getOwnerStats } from '../../services/ownerService';
 import AttendancePage from './AttendancePage';
 import BatchesPage from './BatchesPage';
 import FeesPage from './FeesPage';
@@ -281,6 +282,68 @@ function ComingSoonPlaceholder({ section }) {
   );
 }
 
+// ─── Stats bar ────────────────────────────────────────────────────────────────
+function StatPill({ label, value, loading }) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.75,
+        px: 1.5,
+        py: 0.6,
+        borderRadius: '20px',
+        bgcolor: 'rgba(187,134,252,0.10)',
+        border: `1px solid rgba(187,134,252,0.20)`,
+      }}
+    >
+      <Typography
+        sx={{ fontSize: 13, fontWeight: 700, color: T.primary, fontFamily: T.sans }}
+      >
+        {loading ? '…' : value}
+      </Typography>
+      <Typography sx={{ fontSize: 12, color: T.fg2, fontFamily: T.sans }}>
+        {label}
+      </Typography>
+    </Box>
+  );
+}
+
+function StatsBar({ stats, loading }) {
+  const fmt = new Intl.NumberFormat('en-IN');
+  return (
+    <Box
+      data-testid="stats-bar"
+      sx={{
+        px: 2.5,
+        py: 1,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5,
+        flexWrap: 'wrap',
+        bgcolor: T.surface,
+        borderBottom: `1px solid ${T.outline}`,
+      }}
+    >
+      <StatPill
+        label="students enrolled"
+        value={fmt.format(stats.enrolled_students)}
+        loading={loading}
+      />
+      <StatPill
+        label="collected this month"
+        value={`₹${fmt.format(Number(stats.fees_collected_this_month))}`}
+        loading={loading}
+      />
+      <StatPill
+        label="avg attendance"
+        value={`${stats.avg_attendance_this_month}%`}
+        loading={loading}
+      />
+    </Box>
+  );
+}
+
 // ─── Main content area ────────────────────────────────────────────────────────
 function MainContent({ section, onSectionChange, addStudentBatch }) {
   if (section === 'batches') {
@@ -332,8 +395,20 @@ export default function OwnerDashboard() {
 
   const [activeSection, setActiveSection] = useState('batches');
   const [mobileOpen, setMobileOpen] = useState(false);
-  // Holds the batch to pre-select when navigating to the students section
   const [addStudentBatch, setAddStudentBatch] = useState(null);
+  const [stats, setStats] = useState({
+    enrolled_students: 0,
+    fees_collected_this_month: '0',
+    avg_attendance_this_month: 0,
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  useEffect(() => {
+    getOwnerStats()
+      .then(setStats)
+      .catch(() => {})
+      .finally(() => setStatsLoading(false));
+  }, []);
 
   async function handleLogout() {
     await signOut();
@@ -446,6 +521,8 @@ export default function OwnerDashboard() {
             </Typography>
           </Box>
         )}
+
+        <StatsBar stats={stats} loading={statsLoading} />
 
         <MainContent
           section={activeSection}

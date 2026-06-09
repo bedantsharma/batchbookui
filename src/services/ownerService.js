@@ -264,3 +264,11 @@ export async function createTestScore(scoreData) {
   const { data } = await api.post('/scores/', scoreData);
   return data;
 }
+
+// ─── Owner stats (/owner/stats) ───────────────────────────────────────────────
+
+/** @returns {{ enrolled_students: number, fees_collected_this_month: string, avg_attendance_this_month: number }} */
+export async function getOwnerStats() {
+  const { data } = await api.get('/owner/stats');
+  return data;
+}
