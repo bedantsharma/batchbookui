@@ -19,6 +19,15 @@ vi.mock('../lib/supabaseClient', () => ({
   },
 }));
 
+// ─── Mock ownerService (stats bar uses getOwnerStats on mount) ───────────────
+vi.mock('../services/ownerService', () => ({
+  getOwnerStats: vi.fn().mockResolvedValue({
+    enrolled_students: 12,
+    fees_collected_this_month: '14400.00',
+    avg_attendance_this_month: 82.5,
+  }),
+}));
+
 // ─── Mock the real page components so this test is a unit test of the shell ──
 vi.mock('../pages/owner/AttendancePage', () => ({
   default: () => <div data-testid="attendance-page">Attendance Page</div>,
@@ -158,6 +167,16 @@ describe('OwnerDashboard', () => {
     });
     await waitFor(() => {
       expect(screen.getByText('Login Page')).toBeInTheDocument();
+    });
+  });
+
+  it('renders the stats bar with enrolled students, fees, and attendance', async () => {
+    renderDashboard();
+    await waitFor(() => {
+      expect(screen.getByTestId('stats-bar')).toBeInTheDocument();
+      expect(screen.getByText('students enrolled')).toBeInTheDocument();
+      expect(screen.getByText('collected this month')).toBeInTheDocument();
+      expect(screen.getByText('avg attendance')).toBeInTheDocument();
     });
   });
 });

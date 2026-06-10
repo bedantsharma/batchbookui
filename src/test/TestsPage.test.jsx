@@ -8,6 +8,11 @@ vi.mock('../services/ownerService', () => ({
   getEnrollmentsByBatch: vi.fn(),
   getStudentScores: vi.fn(),
   createTestScore: vi.fn(),
+  getOwnerStats: vi.fn().mockResolvedValue({
+    enrolled_students: 0,
+    fees_collected_this_month: '0',
+    avg_attendance_this_month: 0,
+  }),
 }));
 
 import {
