@@ -84,7 +84,8 @@ export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone 
         localStorage.setItem('bb_student_name', children[0].name ?? '');
       }
 
-      onSuccess(phone);
+      // hasChildren=false means owner hasn't added this parent yet → find institute first
+      onSuccess(phone, children.length > 0);
     } catch (err) {
       setError('OTP verification failed: ' + err.message);
     } finally {

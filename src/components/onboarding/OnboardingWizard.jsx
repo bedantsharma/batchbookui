@@ -53,10 +53,11 @@ export default function OnboardingWizard() {
   const back = () => { setErrors({}); setStep(s => s - 1); };
   const skip = () => setStep(s => s + 1);
 
-  const handleOtpSuccess = (phone) => {
+  const handleOtpSuccess = (phone, hasChildren = true) => {
     const profile = { ...data };
     localStorage.setItem('onboarding_profile', JSON.stringify(profile));
-    navigate('/dashboard/student');
+    // If no children found, owner hasn't added this parent yet — let them find their institute
+    navigate(hasChildren ? '/dashboard/student' : '/find-institute');
   };
 
   const renderStep = () => {

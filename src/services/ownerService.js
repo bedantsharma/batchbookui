@@ -153,24 +153,53 @@ export async function createStudent(studentData) {
  *   due_day?: number,
  *   first_month_amount?: number,
  * }} params
- * @returns {Promise<{ student: StudentResponse, enrollment: EnrollmentResponse }>}
+ * @returns {Promise<EnrollmentResponse>}
  */
 export async function addStudentAndEnroll({
   name,
   phone_number,
-  email,
   batch_id,
   due_day,
   first_month_amount,
 }) {
-  const student = await createStudent({ name, phone_number, email });
-  const enrollment = await enrollStudent({
-    student_id: student.id,
+  const { data } = await api.post('/enrollment/invite', {
+    student_name: name,
+    parent_phone: phone_number,
     batch_id,
-    due_day,
+    due_day: due_day ? Number(due_day) : undefined,
     first_month_amount: first_month_amount != null ? Number(first_month_amount) : undefined,
   });
-  return { student, enrollment };
+  return data;
+}
+
+/** Fetch the owner's institute join code and QR URL.
+ * @returns {Promise<{ join_code: string, join_url: string, institute_name: string, owner_phone: string }>}
+ */
+export async function getInstituteQR() {
+  const { data } = await api.get('/owner/institute/qr');
+  return data;
+}
+
+/** Public: find an institute by the owner's phone number (no auth required).
+ * Uses a direct fetch (not api.js) since this is unauthenticated.
+ * @param {string} ownerPhone - 10-digit number
+ */
+export async function findInstituteByOwnerPhone(ownerPhone) {
+  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  const res = await fetch(`${base}/parent/institute/search?owner_phone=${encodeURIComponent(ownerPhone)}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.detail || `Error ${res.status}`);
+  }
+  return res.json();
+}
+
+/** Authenticated: parent joins an institute by join code.
+ * @param {string} joinCode
+ */
+export async function joinInstitute(joinCode) {
+  const { data } = await api.post('/parent/join-institute', { join_code: joinCode });
+  return data;
 }
 
 // ─── Fee API (/fee/*) ─────────────────────────────────────────────────────────
