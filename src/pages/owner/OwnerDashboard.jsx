@@ -20,12 +20,14 @@ import ClassIcon from '@mui/icons-material/Class';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import SchoolIcon from '@mui/icons-material/School';
+import QrCodeIcon from '@mui/icons-material/QrCode';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../context/AuthContext';
 import AttendancePage from './AttendancePage';
 import BatchesPage from './BatchesPage';
 import FeesPage from './FeesPage';
+import ShareInstitutePage from './ShareInstitutePage';
 import StudentsPage from './StudentsPage';
 import TestsPage from './TestsPage';
 
@@ -76,6 +78,12 @@ const NAV_ITEMS = [
     label: 'Tests',
     icon: <SchoolIcon />,
     description: 'Track student test scores',
+  },
+  {
+    id: 'share',
+    label: 'Share & Join',
+    icon: <QrCodeIcon />,
+    description: 'QR code for parents to join',
   },
 ];
 
@@ -308,6 +316,10 @@ function MainContent({ section, onSectionChange, addStudentBatch }) {
 
   if (section === 'tests') {
     return <TestsPage />;
+  }
+
+  if (section === 'share') {
+    return <ShareInstitutePage />;
   }
 
   return <ComingSoonPlaceholder section={section} />;

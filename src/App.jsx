@@ -17,6 +17,8 @@ import NotFoundPage from './components/NotFoundPage';
 import PhoneLogin from './components/PhoneLogin';
 import OtpVerification from './components/OtpVerification';
 import OnboardingWizard from './components/onboarding/OnboardingWizard';
+import FindInstitutePage from './components/FindInstitutePage';
+import JoinPage from './components/JoinPage';
 import StudentDashboard from './components/student/StudentDashboard';
 import OwnerDashboard from './pages/owner/OwnerDashboard';
 import OwnerSetup from './pages/owner/OwnerSetup';
@@ -57,6 +59,8 @@ function App() {
             <Route path="/phone-login" element={<PhoneLogin />} />
             <Route path="/otp-verification" element={<OtpVerification />} />
             <Route path="/onboarding" element={<OnboardingWizard />} />
+            <Route path="/find-institute" element={<FindInstitutePage />} />
+            <Route path="/join/:code" element={<JoinPage />} />
 
             {/* ── Owner protected routes ────────────────────────── */}
             <Route
