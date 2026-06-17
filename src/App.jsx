@@ -13,6 +13,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import LandingPage from './components/LandingPage';
+import PrivacyPolicy from './components/PrivacyPolicy';
 import NotFoundPage from './components/NotFoundPage';
 import PhoneLogin from './components/PhoneLogin';
 import OtpVerification from './components/OtpVerification';
@@ -54,6 +55,7 @@ function App() {
           <Routes>
             {/* ── Public routes ─────────────────────────────────── */}
             <Route path="/" element={<LandingPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/phone-login" element={<PhoneLogin />} />
             <Route path="/otp-verification" element={<OtpVerification />} />
             <Route path="/onboarding" element={<OnboardingWizard />} />
