@@ -42,9 +42,14 @@ export async function getStudentProfile() {
     .slice(0, 2)
     .join('');
 
-  const hasUnpaidFee = (await getFeeStatus()).some(
+  const feeRecords = await getFeeStatus();
+  const hasUnpaidFee = feeRecords.some(
     (f) => f.status === 'NOT_PAID' || f.status === 'PARTIALLY_PAID',
   );
+  const paymentLink =
+    feeRecords.find(
+      (f) => (f.status === 'NOT_PAID' || f.status === 'PARTIALLY_PAID') && f.payment_link,
+    )?.payment_link ?? null;
 
   const batchNames = attendanceItems.items?.map((a) => a.batch_name) ?? [];
   const subjects = attendanceItems.items?.map((a) => a.subject) ?? [];
@@ -59,6 +64,7 @@ export async function getStudentProfile() {
     batch: batchNames[0] ?? '',
     subjects: [...new Set(subjects)],
     feeDue: hasUnpaidFee,
+    paymentLink,
     avatarUrl: null,
   };
 }
