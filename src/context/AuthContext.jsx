@@ -27,9 +27,11 @@ export function AuthProvider({ children }) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (!session) {
-        // Session expired or revoked — clear role and student ID
+        // Session expired or revoked — clear all four keys set during login/onboarding
         localStorage.removeItem('bb_role');
         localStorage.removeItem('bb_student_id');
+        localStorage.removeItem('bb_student_name');
+        localStorage.removeItem('onboarding_profile');
       }
     });
 
