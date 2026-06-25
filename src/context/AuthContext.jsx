@@ -39,6 +39,8 @@ export function AuthProvider({ children }) {
   const signOut = async () => {
     localStorage.removeItem('bb_role');
     localStorage.removeItem('bb_student_id');
+    localStorage.removeItem('bb_student_name');
+    localStorage.removeItem('onboarding_profile');
     await supabase.auth.signOut();
   };
 

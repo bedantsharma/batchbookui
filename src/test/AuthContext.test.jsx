@@ -103,6 +103,38 @@ describe('AuthContext', () => {
     consoleError.mockRestore();
   });
 
+  it('signOut removes all four bb_ and onboarding localStorage keys', async () => {
+    supabase.auth.getSession.mockResolvedValue({ data: { session: null } });
+    supabase.auth.signOut.mockResolvedValue({});
+
+    // Pre-populate all keys a session might leave behind
+    localStorage.setItem('bb_role', 'student');
+    localStorage.setItem('bb_student_id', '42');
+    localStorage.setItem('bb_student_name', 'Priya');
+    localStorage.setItem('onboarding_profile', JSON.stringify({ role: 'student' }));
+
+    function SignOutButton() {
+      const { signOut } = useAuth();
+      return <button onClick={signOut}>Sign out</button>;
+    }
+
+    const { getByText } = render(
+      <AuthProvider>
+        <SignOutButton />
+      </AuthProvider>
+    );
+
+    await waitFor(() => getByText('Sign out'));
+    getByText('Sign out').click();
+
+    await waitFor(() => expect(supabase.auth.signOut).toHaveBeenCalledOnce());
+
+    expect(localStorage.getItem('bb_role')).toBeNull();
+    expect(localStorage.getItem('bb_student_id')).toBeNull();
+    expect(localStorage.getItem('bb_student_name')).toBeNull();
+    expect(localStorage.getItem('onboarding_profile')).toBeNull();
+  });
+
   it('subscribes to onAuthStateChange and unsubscribes on unmount', async () => {
     supabase.auth.getSession.mockResolvedValue({ data: { session: null } });
     const unsubscribeFn = vi.fn();
