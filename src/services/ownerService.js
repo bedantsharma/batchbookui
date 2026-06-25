@@ -217,6 +217,12 @@ export async function markPayment(recordId, amountPaid, reference) {
   return data;
 }
 
+/** @param {number} recordId — queues a WhatsApp fee_reminder to the parent (202) */
+export async function sendFeeReminder(recordId) {
+  const { data } = await api.post(`/fee/remind/${recordId}`);
+  return data;
+}
+
 // ─── Attendance API (/attendance/*) ──────────────────────────────────────────
 
 /** @param {{ batch_id: number, date: string, start_time: string, end_time: string, topic?: string }} sessionData */

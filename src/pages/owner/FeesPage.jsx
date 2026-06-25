@@ -19,6 +19,7 @@ import {
   IconButton,
   Tooltip,
   LinearProgress,
+  Snackbar,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -28,6 +29,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import PercentIcon from '@mui/icons-material/Percent';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 import {
   getBatches,
@@ -35,6 +37,7 @@ import {
   getBatchFees,
   getFeeStructure,
   generateMonthlyRecords,
+  sendFeeReminder,
 } from '../../services/ownerService';
 import FeeSetupModal from './FeeSetupModal';
 import MarkPaymentModal from './MarkPaymentModal';
@@ -139,6 +142,8 @@ function BatchFeeTable({ batch, month, onStructureChanged }) {
 
   const [setupOpen, setSetupOpen] = useState(false);
   const [payRecord, setPayRecord] = useState(null);
+  const [remindingIds, setRemindingIds] = useState(new Set());
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   const loadStructure = useCallback(async () => {
     setStructureLoading(true);
@@ -199,6 +204,27 @@ function BatchFeeTable({ batch, month, onStructureChanged }) {
     setStructure(newStructure);
     loadRecords();
     onStructureChanged?.();
+  }
+
+  async function handleRemind(recordId) {
+    setRemindingIds((prev) => new Set([...prev, recordId]));
+    try {
+      await sendFeeReminder(recordId);
+      setSnackbar({ open: true, message: 'Reminder sent via WhatsApp!', severity: 'success' });
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setSnackbar({
+        open: true,
+        message: typeof detail === 'string' ? detail : 'Failed to send reminder.',
+        severity: 'error',
+      });
+    } finally {
+      setRemindingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(recordId);
+        return next;
+      });
+    }
   }
 
   function handlePaymentSuccess(updatedRecord) {
@@ -407,15 +433,30 @@ function BatchFeeTable({ batch, month, onStructureChanged }) {
                     </TableCell>
                     <TableCell sx={{ borderBottom: `1px solid ${T.outline}`, py: 1.25 }}>
                       {rec.status !== 'FULLY_PAID' && (
-                        <Tooltip title="Record payment">
-                          <IconButton
-                            size="small"
-                            sx={{ color: T.secondary }}
-                            onClick={() => setPayRecord(rec)}
-                          >
-                            <PaymentIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
+                        <Box sx={{ display: 'flex', gap: 0.5 }}>
+                          <Tooltip title="Record payment">
+                            <IconButton
+                              size="small"
+                              sx={{ color: T.secondary }}
+                              onClick={() => setPayRecord(rec)}
+                            >
+                              <PaymentIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Send fee reminder via WhatsApp">
+                            <span>
+                              <IconButton
+                                size="small"
+                                disabled={remindingIds.has(rec.id)}
+                                sx={{ color: '#25D366', '&.Mui-disabled': { color: 'rgba(37,211,102,0.35)' } }}
+                                onClick={() => handleRemind(rec.id)}
+                                aria-label="Send WhatsApp reminder"
+                              >
+                                <WhatsAppIcon fontSize="small" />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                        </Box>
                       )}
                     </TableCell>
                   </TableRow>
@@ -441,6 +482,21 @@ function BatchFeeTable({ batch, month, onStructureChanged }) {
         record={payRecord}
         onSuccess={handlePaymentSuccess}
       />
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+          sx={{ borderRadius: '12px' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

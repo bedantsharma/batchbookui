@@ -15,6 +15,7 @@ vi.mock('../services/ownerService', () => ({
   setupFeeStructure: vi.fn(),
   generateMonthlyRecords: vi.fn(),
   markPayment: vi.fn(),
+  sendFeeReminder: vi.fn(),
   getOwnerStats: vi.fn().mockResolvedValue({
     enrolled_students: 0,
     fees_collected_this_month: '0',
@@ -30,6 +31,7 @@ import {
   setupFeeStructure,
   generateMonthlyRecords,
   markPayment,
+  sendFeeReminder,
 } from '../services/ownerService';
 
 // ─── Mock matchMedia ──────────────────────────────────────────────────────────
@@ -277,6 +279,42 @@ describe('FeesPage', () => {
     await waitFor(() => {
       expect(screen.getByRole('tab', { name: 'Class 10 Maths' })).toBeInTheDocument();
       expect(screen.queryByRole('tab', { name: 'Old Batch' })).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows WhatsApp remind button for NOT_PAID records but not for FULLY_PAID', async () => {
+    getBatches.mockResolvedValue([BATCH_A]);
+    getFeeDashboard.mockResolvedValue(DASHBOARD);
+    getFeeStructure.mockResolvedValue(FEE_STRUCTURE);
+    getBatchFees.mockResolvedValue(FEE_RECORDS);
+
+    renderFeesPage();
+
+    await waitFor(() => screen.getByText('Rahul Sharma'));
+
+    const rows = screen.getAllByRole('row');
+    const rahulRow = rows.find((r) => within(r).queryByText('Rahul Sharma'));
+    const priyaRow = rows.find((r) => within(r).queryByText('Priya Singh'));
+
+    expect(within(rahulRow).getByLabelText('Send WhatsApp reminder')).toBeInTheDocument();
+    expect(within(priyaRow).queryByLabelText('Send WhatsApp reminder')).toBeNull();
+  });
+
+  it('calls sendFeeReminder with record id when remind button is clicked', async () => {
+    sendFeeReminder.mockResolvedValue({ detail: 'queued' });
+    getBatches.mockResolvedValue([BATCH_A]);
+    getFeeDashboard.mockResolvedValue(DASHBOARD);
+    getFeeStructure.mockResolvedValue(FEE_STRUCTURE);
+    getBatchFees.mockResolvedValue(FEE_RECORDS);
+
+    renderFeesPage();
+
+    await waitFor(() => screen.getByText('Rahul Sharma'));
+
+    fireEvent.click(screen.getByLabelText('Send WhatsApp reminder'));
+
+    await waitFor(() => {
+      expect(sendFeeReminder).toHaveBeenCalledWith(FEE_RECORDS[0].id);
     });
   });
 });
