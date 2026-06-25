@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 // ─── Mock Supabase ────────────────────────────────────────────────────────────
@@ -101,6 +101,70 @@ describe('AuthContext', () => {
     }
     expect(() => render(<Naked />)).toThrow('useAuth must be used within an AuthProvider');
     consoleError.mockRestore();
+  });
+
+  it('signOut removes all four bb_ and onboarding localStorage keys', async () => {
+    supabase.auth.getSession.mockResolvedValue({ data: { session: null } });
+    supabase.auth.signOut.mockResolvedValue({});
+
+    // Pre-populate all keys a session might leave behind
+    localStorage.setItem('bb_role', 'student');
+    localStorage.setItem('bb_student_id', '42');
+    localStorage.setItem('bb_student_name', 'Priya');
+    localStorage.setItem('onboarding_profile', JSON.stringify({ role: 'student' }));
+
+    function SignOutButton() {
+      const { signOut } = useAuth();
+      return <button onClick={signOut}>Sign out</button>;
+    }
+
+    const { getByText } = render(
+      <AuthProvider>
+        <SignOutButton />
+      </AuthProvider>
+    );
+
+    await waitFor(() => getByText('Sign out'));
+    getByText('Sign out').click();
+
+    await waitFor(() => expect(supabase.auth.signOut).toHaveBeenCalledOnce());
+
+    expect(localStorage.getItem('bb_role')).toBeNull();
+    expect(localStorage.getItem('bb_student_id')).toBeNull();
+    expect(localStorage.getItem('bb_student_name')).toBeNull();
+    expect(localStorage.getItem('onboarding_profile')).toBeNull();
+  });
+
+  it('onAuthStateChange clears all four localStorage keys when session becomes null', async () => {
+    supabase.auth.getSession.mockResolvedValue({ data: { session: null } });
+
+    let authChangeCallback;
+    supabase.auth.onAuthStateChange.mockImplementation((callback) => {
+      authChangeCallback = callback;
+      return { data: { subscription: { unsubscribe: vi.fn() } } };
+    });
+
+    localStorage.setItem('bb_role', 'student');
+    localStorage.setItem('bb_student_id', '42');
+    localStorage.setItem('bb_student_name', 'Priya');
+    localStorage.setItem('onboarding_profile', JSON.stringify({ role: 'student' }));
+
+    render(
+      <AuthProvider>
+        <div />
+      </AuthProvider>
+    );
+
+    await waitFor(() => expect(authChangeCallback).toBeDefined());
+
+    act(() => {
+      authChangeCallback('SIGNED_OUT', null);
+    });
+
+    expect(localStorage.getItem('bb_role')).toBeNull();
+    expect(localStorage.getItem('bb_student_id')).toBeNull();
+    expect(localStorage.getItem('bb_student_name')).toBeNull();
+    expect(localStorage.getItem('onboarding_profile')).toBeNull();
   });
 
   it('subscribes to onAuthStateChange and unsubscribes on unmount', async () => {

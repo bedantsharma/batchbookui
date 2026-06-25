@@ -2,10 +2,12 @@ import React from 'react';
 import { Box, Typography, Card, Tooltip } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import PersonIcon from '@mui/icons-material/Person';
+import BusinessIcon from '@mui/icons-material/Business';
 
 export default function RoleStep({ value, onChange }) {
   const options = [
     { id: 'student', label: 'Student', sub: "I'm here to learn", Icon: SchoolIcon, disabled: false },
+    { id: 'owner', label: 'Owner / Institute', sub: 'I run a coaching institute', Icon: BusinessIcon, disabled: false },
     { id: 'teacher', label: 'Teacher', sub: 'Coming soon — ask your institute owner', Icon: PersonIcon, disabled: true },
   ];
 

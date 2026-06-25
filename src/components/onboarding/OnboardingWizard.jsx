@@ -49,7 +49,13 @@ export default function OnboardingWizard() {
     return Object.keys(e).length === 0;
   };
 
-  const next = () => { if (validateStep()) setStep(s => s + 1); };
+  const next = () => {
+    if (data.role === 'owner') {
+      navigate('/phone-login');
+      return;
+    }
+    if (validateStep()) setStep(s => s + 1);
+  };
   const back = () => { setErrors({}); setStep(s => s - 1); };
   const skip = () => setStep(s => s + 1);
 
