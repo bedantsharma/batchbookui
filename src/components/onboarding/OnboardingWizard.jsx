@@ -29,9 +29,9 @@ export default function OnboardingWizard() {
   });
   const [errors, setErrors] = useState({});
 
-  const steps = data.role ? STEPS[data.role] : ['role', 'profile', 'parentDetails', 'parentOtp'];
+  const steps = STEPS[data.role] ?? ['role', 'profile', 'parentDetails', 'parentOtp'];
   const currentStepId = steps[step];
-  const totalSteps = data.role ? STEPS[data.role].length : 4;
+  const totalSteps = steps.length;
 
   const SKIPPABLE = ['profile', 'institution'];
   const canSkip = SKIPPABLE.includes(currentStepId);
