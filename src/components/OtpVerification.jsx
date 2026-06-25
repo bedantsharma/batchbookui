@@ -131,6 +131,10 @@ const OtpVerification = () => {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.detail || `Server error: ${res.status}`);
       }
+
+      // OTP re-sent successfully — unblock inputs and clear old digits
+      setOtp('');
+      setIsResending(false);
     } catch (err) {
       setError('Failed to resend OTP. Please try again. ' + err.message);
       setIsResending(false);
