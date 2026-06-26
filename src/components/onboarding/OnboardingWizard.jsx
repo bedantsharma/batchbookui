@@ -76,7 +76,7 @@ export default function OnboardingWizard() {
       case 'institution':
         return <InstitutionStep institutionName={data.institutionName} onChange={n => update({ institutionName: n })}/>;
       case 'parentOtp':
-        return <PhoneOtpStep phone={data.parentPhone} label="Parent's phone" onSuccess={handleOtpSuccess}/>;
+        return <PhoneOtpStep phone={data.parentPhone} name={data.parentName} label="Parent's phone" onSuccess={handleOtpSuccess}/>;
       case 'teacherOtp':
         return <PhoneOtpStep label="Your phone number" onSuccess={handleOtpSuccess}/>;
       default:

@@ -389,7 +389,18 @@ export default function StudentsPage({ initialBatch }) {
                     <TableCell
                       sx={{ fontFamily: T.sans, fontSize: 14, color: T.fg1, borderColor: T.outline }}
                     >
-                      {enrollment.student_name ?? `Student #${enrollment.student_id}`}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                        {enrollment.student_name ?? `Student #${enrollment.student_id}`}
+                        {(enrollment.parent_is_verified === false ||
+                          enrollment.last_notification_status === 'SKIPPED_UNVERIFIED') && (
+                          <Chip
+                            size="small"
+                            color="warning"
+                            label="Parent not verified — invite re-sent"
+                            sx={{ fontSize: 10, height: 20 }}
+                          />
+                        )}
+                      </Box>
                     </TableCell>
                     <TableCell
                       sx={{ fontFamily: T.sans, fontSize: 13, color: T.primary, borderColor: T.outline }}
