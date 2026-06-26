@@ -55,7 +55,7 @@ describe('StudentsPage — parent unverified badge', () => {
   it('shows warning badge when last_notification_status is SKIPPED_UNVERIFIED', async () => {
     getBatches.mockResolvedValue([BATCH]);
     getEnrollmentsByBatch.mockResolvedValue([
-      makeEnrollment({ parent_is_verified: false, last_notification_status: 'SKIPPED_UNVERIFIED' }),
+      makeEnrollment({ parent_is_verified: true, last_notification_status: 'SKIPPED_UNVERIFIED' }),
     ]);
 
     renderPage();
