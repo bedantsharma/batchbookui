@@ -9,10 +9,10 @@ import AddStudentModal from '../pages/owner/AddStudentModal';
 
 // ─── Mock ownerService ────────────────────────────────────────────────────────
 vi.mock('../services/ownerService', () => ({
-  addStudentAndEnroll: vi.fn(),
+  inviteStudent: vi.fn(),
 }));
 
-import { addStudentAndEnroll } from '../services/ownerService';
+import { inviteStudent } from '../services/ownerService';
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -41,7 +41,8 @@ describe('AddStudentModal', () => {
   it('renders form fields when open', () => {
     renderModal();
     expect(screen.getByLabelText(/student name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/parent name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/parent.*phone/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/enroll in batch/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/fee due day/i)).toBeInTheDocument();
@@ -58,9 +59,31 @@ describe('AddStudentModal', () => {
     fireEvent.click(screen.getByRole('button', { name: /add student/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/name is required/i)).toBeInTheDocument();
+      // 'Name is required.' (student) — exact match avoids colliding with 'Parent name is required.'
+      expect(screen.getByText('Name is required.')).toBeInTheDocument();
     });
-    expect(addStudentAndEnroll).not.toHaveBeenCalled();
+    expect(inviteStudent).not.toHaveBeenCalled();
+  });
+
+  it('shows validation error when parent name is empty', async () => {
+    const user = userEvent.setup();
+    renderModal();
+
+    await user.type(screen.getByLabelText(/student name/i), 'Rahul Sharma');
+    await user.type(screen.getByLabelText(/parent.*phone/i), '9876543210');
+    // leave parent name empty
+
+    const selectInput = screen.getByLabelText(/enroll in batch/i);
+    fireEvent.mouseDown(selectInput);
+    const option = await screen.findByRole('option', { name: /class 10 maths/i });
+    await user.click(option);
+
+    fireEvent.click(screen.getByRole('button', { name: /add student/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/parent name is required/i)).toBeInTheDocument();
+    });
+    expect(inviteStudent).not.toHaveBeenCalled();
   });
 
   it('shows validation error for invalid phone number', async () => {
@@ -68,7 +91,8 @@ describe('AddStudentModal', () => {
     renderModal();
 
     await user.type(screen.getByLabelText(/student name/i), 'Rahul');
-    await user.type(screen.getByLabelText(/phone number/i), '123'); // too short
+    await user.type(screen.getByLabelText(/parent name/i), 'Mr Sharma');
+    await user.type(screen.getByLabelText(/parent.*phone/i), '123'); // too short
 
     fireEvent.click(screen.getByRole('button', { name: /add student/i }));
 
@@ -77,17 +101,15 @@ describe('AddStudentModal', () => {
     });
   });
 
-  it('calls addStudentAndEnroll with correct args on valid submission', async () => {
-    addStudentAndEnroll.mockResolvedValue({
-      student: { id: 5, name: 'Rahul' },
-      enrollment: { id: 1, student_id: 5, batch_id: 1 },
-    });
+  it('calls inviteStudent with correct args on valid submission', async () => {
+    inviteStudent.mockResolvedValue({ enrollment_id: 1 });
     const onAdded = vi.fn();
     const user = userEvent.setup();
     renderModal({ onAdded });
 
     await user.type(screen.getByLabelText(/student name/i), 'Rahul Sharma');
-    await user.type(screen.getByLabelText(/phone number/i), '9876543210');
+    await user.type(screen.getByLabelText(/parent name/i), 'Mr Sharma');
+    await user.type(screen.getByLabelText(/parent.*phone/i), '9876543210');
 
     // Select first batch from the dropdown
     const selectInput = screen.getByLabelText(/enroll in batch/i);
@@ -98,25 +120,24 @@ describe('AddStudentModal', () => {
     await user.click(screen.getByRole('button', { name: /add student/i }));
 
     await waitFor(() => {
-      expect(addStudentAndEnroll).toHaveBeenCalledOnce();
-      const call = addStudentAndEnroll.mock.calls[0][0];
-      expect(call.name).toBe('Rahul Sharma');
-      expect(call.phone_number).toBe('9876543210');
+      expect(inviteStudent).toHaveBeenCalledOnce();
+      const call = inviteStudent.mock.calls[0][0];
+      expect(call.student_name).toBe('Rahul Sharma');
+      expect(call.parent_name).toBe('Mr Sharma');
+      expect(call.parent_phone).toBe('9876543210');
       expect(call.batch_id).toBe(1);
     });
   });
 
   it('calls onAdded after successful submission', async () => {
-    addStudentAndEnroll.mockResolvedValue({
-      student: { id: 5 },
-      enrollment: { id: 1 },
-    });
+    inviteStudent.mockResolvedValue({ enrollment_id: 1 });
     const onAdded = vi.fn();
     const user = userEvent.setup();
     renderModal({ onAdded });
 
     await user.type(screen.getByLabelText(/student name/i), 'Test Student');
-    await user.type(screen.getByLabelText(/phone number/i), '9999999999');
+    await user.type(screen.getByLabelText(/parent name/i), 'Test Parent');
+    await user.type(screen.getByLabelText(/parent.*phone/i), '9999999999');
 
     const selectInput = screen.getByLabelText(/enroll in batch/i);
     fireEvent.mouseDown(selectInput);
@@ -130,15 +151,16 @@ describe('AddStudentModal', () => {
     });
   });
 
-  it('shows API error when addStudentAndEnroll fails', async () => {
+  it('shows API error when inviteStudent fails', async () => {
     const err = new Error('Server Error');
     err.response = { data: { detail: 'Phone number already registered' } };
-    addStudentAndEnroll.mockRejectedValue(err);
+    inviteStudent.mockRejectedValue(err);
     const user = userEvent.setup();
     renderModal();
 
     await user.type(screen.getByLabelText(/student name/i), 'Rahul');
-    await user.type(screen.getByLabelText(/phone number/i), '9876543210');
+    await user.type(screen.getByLabelText(/parent name/i), 'Mr Sharma');
+    await user.type(screen.getByLabelText(/parent.*phone/i), '9876543210');
 
     const selectInput = screen.getByLabelText(/enroll in batch/i);
     fireEvent.mouseDown(selectInput);

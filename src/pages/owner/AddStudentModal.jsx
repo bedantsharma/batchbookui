@@ -14,7 +14,7 @@ import {
   IconButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { addStudentAndEnroll } from '../../services/ownerService';
+import { inviteStudent } from '../../services/ownerService';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const T = {
@@ -54,6 +54,7 @@ function proRatedAmount(dueDay, monthlyFee) {
 function validate(form) {
   const errors = {};
   if (!form.name.trim()) errors.name = 'Name is required.';
+  if (!form.parent_name.trim()) errors.parent_name = 'Parent name is required.';
   if (!form.phone_number.trim()) {
     errors.phone_number = 'Phone number is required.';
   } else if (!/^\d{10}$/.test(form.phone_number.trim())) {
@@ -84,6 +85,7 @@ function validate(form) {
 export default function AddStudentModal({ open, onClose, onAdded, batches = [], defaultBatch = null }) {
   const [form, setForm] = useState({
     name: '',
+    parent_name: '',
     phone_number: '',
     email: '',
     batch_id: '',
@@ -113,6 +115,7 @@ export default function AddStudentModal({ open, onClose, onAdded, batches = [], 
     if (loading) return;
     setForm({
       name: '',
+      parent_name: '',
       phone_number: '',
       email: '',
       batch_id: defaultBatch?.id ?? '',
@@ -137,13 +140,14 @@ export default function AddStudentModal({ open, onClose, onAdded, batches = [], 
     setLoading(true);
 
     try {
-      await addStudentAndEnroll({
-        name: form.name.trim(),
-        phone_number: form.phone_number.trim(),
-        email: form.email.trim() || undefined,
+      await inviteStudent({
+        student_name: form.name.trim(),
+        parent_name: form.parent_name.trim(),
+        parent_phone: form.phone_number.trim(),
         batch_id: Number(form.batch_id),
         due_day: Number(form.due_day),
-        first_month_amount: form.first_month_amount !== '' ? Number(form.first_month_amount) : undefined,
+        first_month_amount:
+          form.first_month_amount !== '' ? Number(form.first_month_amount) : undefined,
       });
       handleClose();
       onAdded();
@@ -220,7 +224,7 @@ export default function AddStudentModal({ open, onClose, onAdded, batches = [], 
       <Box component="form" onSubmit={handleSubmit} noValidate>
         <DialogContent sx={{ pt: 1, pb: 2 }}>
           <Grid container spacing={2}>
-            {/* Name */}
+            {/* Student Name */}
             <Grid item xs={12}>
               <TextField
                 label="Student Name"
@@ -237,10 +241,27 @@ export default function AddStudentModal({ open, onClose, onAdded, batches = [], 
               />
             </Grid>
 
-            {/* Phone */}
+            {/* Parent Name */}
+            <Grid item xs={12}>
+              <TextField
+                label="Parent Name"
+                placeholder="e.g. Mr. Sharma"
+                value={form.parent_name}
+                onChange={handleChange('parent_name')}
+                error={!!errors.parent_name}
+                helperText={errors.parent_name}
+                disabled={loading}
+                fullWidth
+                required
+                sx={inputSx}
+                data-testid="parent-name-input"
+              />
+            </Grid>
+
+            {/* Parent's phone */}
             <Grid item xs={12} sm={7}>
               <TextField
-                label="Phone Number"
+                label="Parent's phone"
                 placeholder="10-digit number"
                 value={form.phone_number}
                 onChange={handleChange('phone_number')}
