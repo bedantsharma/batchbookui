@@ -145,6 +145,9 @@ export async function createStudent(studentData) {
 /**
  * Convenience: create a student record and immediately enroll them in a batch.
  *
+ * @deprecated Use inviteStudent() instead. This creates Student + Enrollment separately;
+ *            inviteStudent() handles Parent creation and sends the enrollment invite link.
+ *
  * @param {{
  *   name: string,
  *   phone_number: string,
@@ -171,6 +174,39 @@ export async function addStudentAndEnroll({
     first_month_amount: first_month_amount != null ? Number(first_month_amount) : undefined,
   });
   return { student, enrollment };
+}
+
+/**
+ * Owner invites a new student: backend creates Parent + Student + Enrollment and
+ * sends the enrollment_invite WhatsApp link. Replaces addStudentAndEnroll.
+ *
+ * @param {{
+ *   student_name: string,
+ *   parent_name: string,
+ *   parent_phone: string,
+ *   batch_id: number,
+ *   due_day?: number,
+ *   first_month_amount?: number,
+ * }} payload
+ * @returns {Promise<EnrollmentResponse>}
+ */
+export async function inviteStudent({
+  student_name,
+  parent_name,
+  parent_phone,
+  batch_id,
+  due_day,
+  first_month_amount,
+}) {
+  const { data } = await api.post('/enrollment/invite', {
+    student_name,
+    parent_name,
+    parent_phone,
+    batch_id,
+    due_day,
+    first_month_amount,
+  });
+  return data;
 }
 
 // ─── Fee API (/fee/*) ─────────────────────────────────────────────────────────

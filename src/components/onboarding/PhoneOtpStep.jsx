@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabaseClient';
 
 const API = import.meta.env.VITE_API_BASE_URL;
 
-export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone number', onSuccess }) {
+export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone number', name, onSuccess }) {
   const prefilled = !!initialPhone;
   const [subStep, setSubStep] = useState(prefilled ? 'otp-pending' : 'phone');
   const [phone, setPhone] = useState(initialPhone);
@@ -64,7 +64,7 @@ export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone 
       const res = await fetch(`${API}/parent/verify_otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, token: otp }),
+        body: JSON.stringify(name ? { phone, token: otp, name } : { phone, token: otp }),
       });
       if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || `Error ${res.status}`); }
       const { auth_token, refresh_token, children = [] } = await res.json();

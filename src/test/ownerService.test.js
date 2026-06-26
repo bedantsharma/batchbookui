@@ -34,6 +34,7 @@ import {
   removeEnrollment,
   createStudent,
   addStudentAndEnroll,
+  inviteStudent,
 } from '../services/ownerService';
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -236,5 +237,56 @@ describe('ownerService — student functions', () => {
 
     // enrollStudent should NOT have been called
     expect(api.post).toHaveBeenCalledOnce();
+  });
+
+  it('inviteStudent() posts to /enrollment/invite with parent fields', async () => {
+    api.post.mockResolvedValueOnce({ data: { id: 1, enrollment_id: 42 } });
+    await inviteStudent({
+      student_name: 'Rahul',
+      parent_name: 'Asha',
+      parent_phone: '9876543210',
+      batch_id: 3,
+      due_day: 5,
+      first_month_amount: 750,
+    });
+    expect(api.post).toHaveBeenCalledWith(
+      '/enrollment/invite',
+      expect.objectContaining({
+        student_name: 'Rahul',
+        parent_name: 'Asha',
+        parent_phone: '9876543210',
+        batch_id: 3,
+        due_day: 5,
+        first_month_amount: 750,
+      })
+    );
+  });
+
+  it('inviteStudent() returns the enrollment response data', async () => {
+    const mockResponse = { id: 1, enrollment_id: 42, student_name: 'Rahul' };
+    api.post.mockResolvedValueOnce({ data: mockResponse });
+    const result = await inviteStudent({
+      student_name: 'Rahul',
+      parent_name: 'Asha',
+      parent_phone: '9876543210',
+      batch_id: 3,
+      due_day: 5,
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('inviteStudent() propagates API errors', async () => {
+    const err = new Error('Batch not found');
+    api.post.mockRejectedValue(err);
+
+    await expect(
+      inviteStudent({
+        student_name: 'Rahul',
+        parent_name: 'Asha',
+        parent_phone: '9876543210',
+        batch_id: 999,
+        due_day: 5,
+      })
+    ).rejects.toThrow('Batch not found');
   });
 });
