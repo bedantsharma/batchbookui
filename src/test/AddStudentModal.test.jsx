@@ -43,7 +43,6 @@ describe('AddStudentModal', () => {
     expect(screen.getByLabelText(/student name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/parent name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/parent.*phone/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/enroll in batch/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/fee due day/i)).toBeInTheDocument();
   });

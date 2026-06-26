@@ -87,7 +87,6 @@ export default function AddStudentModal({ open, onClose, onAdded, batches = [], 
     name: '',
     parent_name: '',
     phone_number: '',
-    email: '',
     batch_id: '',
     due_day: String(todayDayOfMonth()),
     first_month_amount: '',
@@ -117,7 +116,6 @@ export default function AddStudentModal({ open, onClose, onAdded, batches = [], 
       name: '',
       parent_name: '',
       phone_number: '',
-      email: '',
       batch_id: defaultBatch?.id ?? '',
       due_day: String(todayDayOfMonth()),
       first_month_amount: '',
@@ -259,7 +257,7 @@ export default function AddStudentModal({ open, onClose, onAdded, batches = [], 
             </Grid>
 
             {/* Parent's phone */}
-            <Grid item xs={12} sm={7}>
+            <Grid item xs={12}>
               <TextField
                 label="Parent's phone"
                 placeholder="10-digit number"
@@ -271,20 +269,6 @@ export default function AddStudentModal({ open, onClose, onAdded, batches = [], 
                 fullWidth
                 required
                 inputProps={{ maxLength: 10, inputMode: 'numeric', 'data-testid': 'phone-input' }}
-                sx={inputSx}
-              />
-            </Grid>
-
-            {/* Email (optional) */}
-            <Grid item xs={12} sm={5}>
-              <TextField
-                label="Email (optional)"
-                type="email"
-                placeholder="rahul@example.com"
-                value={form.email}
-                onChange={handleChange('email')}
-                disabled={loading}
-                fullWidth
                 sx={inputSx}
               />
             </Grid>

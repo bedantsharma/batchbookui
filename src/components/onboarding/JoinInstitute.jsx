@@ -11,7 +11,7 @@ export default function JoinInstitute() {
 
   const handleSuccess = async () => {
     // Parent claimed their stub on OTP verify (backend links by phone).
-    // Persist join code for the join-institute call if the parent is new.
+    // Reserve join code in localStorage for future explicit /parent/join-institute call; currently unused (backend claims by phone).
     try {
       localStorage.setItem('bb_join_code', joinCode || '');
     } catch { /* ignore */ }
