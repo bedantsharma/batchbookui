@@ -294,12 +294,7 @@ export default function AttendancePage() {
             >
               {batches.map((b) => (
                 <MenuItem key={b.id} value={b.id} sx={{ fontFamily: T.sans }}>
-                  {b.name} — {b.subject}
-                  {b.grade ? ` (Grade ${b.grade})` : ''}
-                  {' · '}
-                  {b.days_of_week.map((d) => DAYS[d] || d).join('/')}
-                  {' '}
-                  {formatTime(b.start_time)}
+                  {b.name.length > 14 ? `${b.name.slice(0, 12)}…` : b.name}
                 </MenuItem>
               ))}
             </Select>

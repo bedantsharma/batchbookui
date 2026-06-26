@@ -365,7 +365,7 @@ function BatchFeeTable({ batch, month, onStructureChanged }) {
           <Table size="small">
             <TableHead>
               <TableRow>
-                {['Student', 'Amount Due', 'Amount Paid', 'Status', 'Action'].map((h) => (
+                {['Student', 'Enrollment', 'Amount Due', 'Amount Paid', 'Status', 'Action'].map((h) => (
                   <TableCell
                     key={h}
                     sx={{
@@ -404,7 +404,18 @@ function BatchFeeTable({ batch, month, onStructureChanged }) {
                         py: 1.25,
                       }}
                     >
-                      {rec.student_name ?? `Enrollment #${rec.enrollment_id}`}
+                      {rec.student_name ?? '—'}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontFamily: T.sans,
+                        fontSize: 12,
+                        color: T.fg3,
+                        borderBottom: `1px solid ${T.outline}`,
+                        py: 1.25,
+                      }}
+                    >
+                      #{rec.enrollment_id}
                     </TableCell>
                     <TableCell
                       sx={{
