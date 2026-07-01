@@ -20,6 +20,7 @@ import ClassIcon from '@mui/icons-material/Class';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import SchoolIcon from '@mui/icons-material/School';
+import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../context/AuthContext';
@@ -28,6 +29,7 @@ import AttendancePage from './AttendancePage';
 import BatchesPage from './BatchesPage';
 import FeesPage from './FeesPage';
 import StudentsPage from './StudentsPage';
+import SettingsPage from './SettingsPage';
 import TestsPage from './TestsPage';
 
 // ─── Design tokens (matches existing Dashboard palette) ───────────────────────
@@ -77,6 +79,12 @@ const NAV_ITEMS = [
     label: 'Tests',
     icon: <SchoolIcon />,
     description: 'Track student test scores',
+  },
+  {
+    id: 'settings',
+    label: 'Settings',
+    icon: <SettingsIcon />,
+    description: 'Payouts and account settings',
   },
 ];
 
@@ -362,7 +370,7 @@ function MainContent({ section, onSectionChange, addStudentBatch }) {
   }
 
   if (section === 'fees') {
-    return <FeesPage />;
+    return <FeesPage onNavigateToSettings={() => onSectionChange('settings')} />;
   }
 
   if (section === 'attendance') {
@@ -371,6 +379,10 @@ function MainContent({ section, onSectionChange, addStudentBatch }) {
 
   if (section === 'tests') {
     return <TestsPage />;
+  }
+
+  if (section === 'settings') {
+    return <SettingsPage />;
   }
 
   return <ComingSoonPlaceholder section={section} />;
