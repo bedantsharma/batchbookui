@@ -314,3 +314,24 @@ export async function getOwnerStats() {
   const { data } = await api.get('/owner/stats');
   return data;
 }
+
+// ─── Razorpay Payouts (/owner/institute/payouts) ──────────────────────────────
+
+/** @returns {Promise<{status: 'NOT_CONNECTED'|'CONNECTED'|'NEEDS_RECONNECT', key_id: string|null, secret_configured: boolean}>} */
+export async function getRazorpayPayoutStatus() {
+  const { data } = await api.get('/owner/institute/payouts');
+  return data;
+}
+
+/**
+ * @param {string} keyId
+ * @param {string} keySecret
+ * @returns {Promise<{status: string, key_id: string|null, secret_configured: boolean}>}
+ */
+export async function saveRazorpayCredentials(keyId, keySecret) {
+  const { data } = await api.patch('/owner/institute/payouts', {
+    razorpay_key_id: keyId,
+    razorpay_key_secret: keySecret,
+  });
+  return data;
+}
