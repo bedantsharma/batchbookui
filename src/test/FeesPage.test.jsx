@@ -16,6 +16,7 @@ vi.mock('../services/ownerService', () => ({
   generateMonthlyRecords: vi.fn(),
   markPayment: vi.fn(),
   sendFeeReminder: vi.fn(),
+  getRazorpayPayoutStatus: vi.fn(),
   getOwnerStats: vi.fn().mockResolvedValue({
     enrolled_students: 0,
     fees_collected_this_month: '0',
@@ -32,6 +33,7 @@ import {
   generateMonthlyRecords,
   markPayment,
   sendFeeReminder,
+  getRazorpayPayoutStatus,
 } from '../services/ownerService';
 
 // ─── Mock matchMedia ──────────────────────────────────────────────────────────
@@ -108,6 +110,7 @@ function renderFeesPage() {
 describe('FeesPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getRazorpayPayoutStatus.mockResolvedValue({ status: 'CONNECTED', key_id: 'rzp_live_x', secret_configured: true });
   });
 
   it('renders the page heading', async () => {
@@ -511,6 +514,7 @@ describe('MarkPaymentModal', () => {
 describe('OwnerDashboard → Fees section', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getRazorpayPayoutStatus.mockResolvedValue({ status: 'CONNECTED', key_id: 'rzp_live_x', secret_configured: true });
     vi.mocked(window.matchMedia).mockImplementation((query) => ({
       matches: false,
       media: query,
@@ -562,5 +566,56 @@ describe('OwnerDashboard → Fees section', () => {
     await waitFor(() => {
       expect(screen.getByText('Fee Management')).toBeInTheDocument();
     });
+  });
+});
+
+// ─── FeesPage — Connect Payouts banner ───────────────────────────────────────
+
+describe('FeesPage — Connect Payouts banner', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    getBatches.mockResolvedValue([]);
+    getFeeDashboard.mockResolvedValue(DASHBOARD);
+  });
+
+  it('shows the banner when payouts are not connected', async () => {
+    getRazorpayPayoutStatus.mockResolvedValue({ status: 'NOT_CONNECTED', key_id: null, secret_configured: false });
+
+    render(<FeesPage />);
+
+    expect(await screen.findByText(/connect your razorpay account/i)).toBeInTheDocument();
+  });
+
+  it('does not show the banner when payouts are connected', async () => {
+    getRazorpayPayoutStatus.mockResolvedValue({ status: 'CONNECTED', key_id: 'rzp_live_x', secret_configured: true });
+
+    render(<FeesPage />);
+
+    await waitFor(() => expect(getRazorpayPayoutStatus).toHaveBeenCalledOnce());
+    expect(screen.queryByText(/connect your razorpay account/i)).not.toBeInTheDocument();
+  });
+
+  it('calls onNavigateToSettings when the banner action is clicked', async () => {
+    getRazorpayPayoutStatus.mockResolvedValue({ status: 'NOT_CONNECTED', key_id: null, secret_configured: false });
+    const onNavigateToSettings = vi.fn();
+
+    render(<FeesPage onNavigateToSettings={onNavigateToSettings} />);
+
+    const banner = await screen.findByText(/connect your razorpay account/i);
+    fireEvent.click(screen.getByRole('button', { name: /connect payouts/i }));
+
+    expect(onNavigateToSettings).toHaveBeenCalledOnce();
+    expect(banner).toBeInTheDocument(); // sanity: banner was actually rendered before the click
+  });
+
+  it('dismissing the banner hides it', async () => {
+    getRazorpayPayoutStatus.mockResolvedValue({ status: 'NOT_CONNECTED', key_id: null, secret_configured: false });
+
+    render(<FeesPage />);
+
+    await screen.findByText(/connect your razorpay account/i);
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+
+    expect(screen.queryByText(/connect your razorpay account/i)).not.toBeInTheDocument();
   });
 });

@@ -30,6 +30,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import PercentIcon from '@mui/icons-material/Percent';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import CloseIcon from '@mui/icons-material/Close';
 
 import {
   getBatches,
@@ -38,6 +39,7 @@ import {
   getFeeStructure,
   generateMonthlyRecords,
   sendFeeReminder,
+  getRazorpayPayoutStatus,
 } from '../../services/ownerService';
 import FeeSetupModal from './FeeSetupModal';
 import MarkPaymentModal from './MarkPaymentModal';
@@ -523,7 +525,7 @@ function BatchFeeTable({ batch, month, onStructureChanged }) {
  * - FeeSetupModal for setting/updating fee structures
  * - MarkPaymentModal for recording cash/UPI payments
  */
-export default function FeesPage() {
+export default function FeesPage({ onNavigateToSettings } = {}) {
   const [month, setMonth] = useState(currentMonthStr());
   const [batches, setBatches] = useState([]);
   const [batchesLoading, setBatchesLoading] = useState(true);
@@ -534,6 +536,8 @@ export default function FeesPage() {
   const [dashError, setDashError] = useState('');
 
   const [batchError, setBatchError] = useState('');
+  const [payoutsConnected, setPayoutsConnected] = useState(true); // assume connected until checked, to avoid a flash
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   const loadBatches = useCallback(async () => {
     setBatchesLoading(true);
@@ -572,6 +576,12 @@ export default function FeesPage() {
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
+
+  useEffect(() => {
+    getRazorpayPayoutStatus()
+      .then((data) => setPayoutsConnected(data.status === 'CONNECTED'))
+      .catch(() => {}); // fail silent — banner just won't show
+  }, []);
 
   // Reset to first tab when month changes so the tab stays valid
   useEffect(() => {
@@ -629,6 +639,34 @@ export default function FeesPage() {
           </Tooltip>
         </Box>
       </Box>
+
+      {!payoutsConnected && !bannerDismissed && (
+        <Alert
+          severity="warning"
+          action={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Button
+                size="small"
+                onClick={() => onNavigateToSettings?.()}
+                sx={{ fontFamily: T.sans, textTransform: 'none', fontWeight: 700 }}
+              >
+                Connect Payouts
+              </Button>
+              <IconButton
+                size="small"
+                aria-label="Close"
+                color="inherit"
+                onClick={() => setBannerDismissed(true)}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          }
+          sx={{ mb: 3, borderRadius: '12px' }}
+        >
+          Connect your Razorpay account to start collecting fees online.
+        </Alert>
+      )}
 
       {/* ── Summary cards ──────────────────────────── */}
       {dashError ? (
