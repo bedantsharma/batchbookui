@@ -16,6 +16,7 @@ import LandingPage from './components/LandingPage';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import NotFoundPage from './components/NotFoundPage';
 import PhoneLogin from './components/PhoneLogin';
+import PaymentSuccess from './components/PaymentSuccess';
 import OtpVerification from './components/OtpVerification';
 import OnboardingWizard from './components/onboarding/OnboardingWizard';
 import JoinInstitute from './components/onboarding/JoinInstitute';
@@ -61,6 +62,7 @@ function App() {
             <Route path="/otp-verification" element={<OtpVerification />} />
             <Route path="/onboarding" element={<OnboardingWizard />} />
             <Route path="/join/:joinCode" element={<JoinInstitute />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
 
             {/* ── Owner protected routes ────────────────────────── */}
             <Route
