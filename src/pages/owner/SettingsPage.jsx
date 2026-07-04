@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
-import { getRazorpayPayoutStatus, saveRazorpayCredentials } from '../../services/ownerService';
+import { getRazorpayPayoutStatus, saveRazorpayCredentials, testRazorpayConnection } from '../../services/ownerService';
 
 // ─── Design tokens (matches existing owner pages) ─────────────────────────────
 const T = {
@@ -53,6 +53,8 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState(null); // 'CONNECTED' | 'NEEDS_RECONNECT' | null
 
   useEffect(() => {
     getRazorpayPayoutStatus()
@@ -79,6 +81,23 @@ export default function SettingsPage() {
       setError(typeof detail === 'string' ? detail : 'Failed to save Razorpay credentials.');
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleTestConnection() {
+    setError('');
+    setSuccess(false);
+    setTestResult(null);
+    setTesting(true);
+    try {
+      const data = await testRazorpayConnection();
+      setStatus(data.status);
+      setTestResult(data.status);
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      setError(typeof detail === 'string' ? detail : 'Failed to test Razorpay connection.');
+    } finally {
+      setTesting(false);
     }
   }
 
@@ -151,23 +170,51 @@ export default function SettingsPage() {
                 size="small"
                 fullWidth
               />
-              <Button
-                variant="contained"
-                onClick={handleSave}
-                disabled={saving || !keyId || !keySecret}
-                sx={{
-                  alignSelf: 'flex-start',
-                  fontFamily: T.sans,
-                  textTransform: 'none',
-                  borderRadius: '10px',
-                  bgcolor: T.primary,
-                  color: '#000',
-                  fontWeight: 600,
-                  '&:hover': { bgcolor: '#9c5fdc' },
-                }}
-              >
-                {saving ? 'Saving…' : 'Save'}
-              </Button>
+              {testResult === 'CONNECTED' && (
+                <Alert severity="success" sx={{ borderRadius: '12px' }}>
+                  Connection is working — your Razorpay keys are still valid.
+                </Alert>
+              )}
+              {testResult === 'NEEDS_RECONNECT' && (
+                <Alert severity="warning" sx={{ borderRadius: '12px' }}>
+                  Razorpay rejected these keys — they may have been rotated or revoked
+                  on your Razorpay dashboard. Paste fresh ones above and save.
+                </Alert>
+              )}
+              <Box sx={{ display: 'flex', gap: 1.5 }}>
+                <Button
+                  variant="contained"
+                  onClick={handleSave}
+                  disabled={saving || !keyId || !keySecret}
+                  sx={{
+                    fontFamily: T.sans,
+                    textTransform: 'none',
+                    borderRadius: '10px',
+                    bgcolor: T.primary,
+                    color: '#000',
+                    fontWeight: 600,
+                    '&:hover': { bgcolor: '#9c5fdc' },
+                  }}
+                >
+                  {saving ? 'Saving…' : 'Save'}
+                </Button>
+                {status !== 'NOT_CONNECTED' && (
+                  <Button
+                    variant="outlined"
+                    onClick={handleTestConnection}
+                    disabled={testing}
+                    sx={{
+                      fontFamily: T.sans,
+                      textTransform: 'none',
+                      borderRadius: '10px',
+                      borderColor: T.outline,
+                      color: T.fg1,
+                    }}
+                  >
+                    {testing ? 'Testing…' : 'Test connection'}
+                  </Button>
+                )}
+              </Box>
             </Box>
           )}
         </CardContent>

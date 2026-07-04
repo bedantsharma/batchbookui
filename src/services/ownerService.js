@@ -335,3 +335,14 @@ export async function saveRazorpayCredentials(keyId, keySecret) {
   });
   return data;
 }
+
+/**
+ * Re-validates the owner's already-saved Razorpay credentials against the
+ * live API (no new keys submitted). Flips status to CONNECTED or
+ * NEEDS_RECONNECT server-side depending on the result.
+ * @returns {Promise<{status: string, key_id: string|null, secret_configured: boolean, webhook_configured: boolean}>}
+ */
+export async function testRazorpayConnection() {
+  const { data } = await api.post('/owner/institute/payouts/test-connection');
+  return data;
+}
