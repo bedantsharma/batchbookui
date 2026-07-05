@@ -5,6 +5,7 @@ import SettingsPage from '../pages/owner/SettingsPage';
 vi.mock('../services/ownerService', () => ({
   getRazorpayPayoutStatus: vi.fn(),
   saveRazorpayCredentials: vi.fn(),
+  testRazorpayConnection: vi.fn(),
   getOwnerStats: vi.fn().mockResolvedValue({
     enrolled_students: 0,
     fees_collected_this_month: '0',
@@ -12,7 +13,7 @@ vi.mock('../services/ownerService', () => ({
   }),
 }));
 
-import { getRazorpayPayoutStatus, saveRazorpayCredentials } from '../services/ownerService';
+import { getRazorpayPayoutStatus, saveRazorpayCredentials, testRazorpayConnection } from '../services/ownerService';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -76,6 +77,71 @@ describe('SettingsPage — Payouts', () => {
     fireEvent.change(screen.getByLabelText(/key id/i), { target: { value: 'rzp_live_new' } });
     fireEvent.change(screen.getByLabelText(/key secret/i), { target: { value: 'topsecretvalue' } });
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(await screen.findByText(/no institute found for this owner/i)).toBeInTheDocument();
+  });
+});
+
+describe('SettingsPage — Test connection', () => {
+  it('does not show a Test connection button when not connected', async () => {
+    getRazorpayPayoutStatus.mockResolvedValue({
+      status: 'NOT_CONNECTED', key_id: null, secret_configured: false,
+    });
+
+    render(<SettingsPage />);
+
+    await waitFor(() => expect(getRazorpayPayoutStatus).toHaveBeenCalledOnce());
+    expect(screen.queryByRole('button', { name: /test connection/i })).not.toBeInTheDocument();
+  });
+
+  it('shows a success message when the stored keys still work', async () => {
+    getRazorpayPayoutStatus.mockResolvedValue({
+      status: 'CONNECTED', key_id: 'rzp_live_abc123', secret_configured: true,
+    });
+    testRazorpayConnection.mockResolvedValue({
+      status: 'CONNECTED', key_id: 'rzp_live_abc123', secret_configured: true,
+    });
+
+    render(<SettingsPage />);
+    await waitFor(() => screen.getByRole('button', { name: /test connection/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: /test connection/i }));
+
+    await waitFor(() => expect(testRazorpayConnection).toHaveBeenCalledOnce());
+    expect(await screen.findByText(/connection is working/i)).toBeInTheDocument();
+  });
+
+  it('shows a reconnect message when the stored keys have stopped working', async () => {
+    getRazorpayPayoutStatus.mockResolvedValue({
+      status: 'CONNECTED', key_id: 'rzp_live_abc123', secret_configured: true,
+    });
+    testRazorpayConnection.mockResolvedValue({
+      status: 'NEEDS_RECONNECT', key_id: 'rzp_live_abc123', secret_configured: true,
+    });
+
+    render(<SettingsPage />);
+    await waitFor(() => screen.getByRole('button', { name: /test connection/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: /test connection/i }));
+
+    await waitFor(() =>
+      expect(screen.getByText(/^needs reconnect$/i)).toBeInTheDocument()
+    );
+    expect(screen.getByText(/rotated or revoked/i)).toBeInTheDocument();
+  });
+
+  it('shows an error banner when the test request itself fails', async () => {
+    getRazorpayPayoutStatus.mockResolvedValue({
+      status: 'CONNECTED', key_id: 'rzp_live_abc123', secret_configured: true,
+    });
+    testRazorpayConnection.mockRejectedValue({
+      response: { data: { detail: 'No institute found for this owner' } },
+    });
+
+    render(<SettingsPage />);
+    await waitFor(() => screen.getByRole('button', { name: /test connection/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: /test connection/i }));
 
     expect(await screen.findByText(/no institute found for this owner/i)).toBeInTheDocument();
   });
