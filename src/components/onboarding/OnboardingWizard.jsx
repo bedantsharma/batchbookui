@@ -6,12 +6,12 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { randomHandle, randomInstitute } from './wizardUtils';
 import RoleStep from './RoleStep';
 import ProfileStep from './ProfileStep';
-import ParentDetailsStep from './ParentDetailsStep';
 import InstitutionStep from './InstitutionStep';
 import PhoneOtpStep from './PhoneOtpStep';
+import { computeMissingFields, hasMissingFields } from '../../lib/profileCompleteness';
 
 const STEPS = {
-  student: ['role', 'profile', 'parentDetails', 'parentOtp'],
+  student: ['role', 'parentOtp'],
   teacher: ['role', 'profile', 'institution', 'teacherOtp'],
 };
 
@@ -41,10 +41,6 @@ export default function OnboardingWizard() {
   const validateStep = () => {
     const e = {};
     if (currentStepId === 'role' && !data.role) { e.role = 'Please select a role.'; }
-    if (currentStepId === 'parentDetails') {
-      if (!data.parentName.trim()) e.parentName = 'Parent name is required.';
-      if (data.parentPhone.length !== 10) e.parentPhone = 'Enter a valid 10-digit phone number.';
-    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -59,9 +55,13 @@ export default function OnboardingWizard() {
   const back = () => { setErrors({}); setStep(s => s - 1); };
   const skip = () => setStep(s => s + 1);
 
-  const handleOtpSuccess = (phone) => {
-    const profile = { ...data };
-    localStorage.setItem('onboarding_profile', JSON.stringify(profile));
+  const handleOtpSuccess = (phone, { parentName, children } = {}) => {
+    const primaryChild = children?.[0];
+    const missing = computeMissingFields(parentName, primaryChild);
+    if (primaryChild && hasMissingFields(missing)) {
+      navigate('/complete-profile', { state: { missing, childId: primaryChild.id } });
+      return;
+    }
     navigate('/dashboard/student');
   };
 
@@ -71,12 +71,10 @@ export default function OnboardingWizard() {
         return <RoleStep value={data.role} onChange={role => { update({ role }); setErrors({}); }}/>;
       case 'profile':
         return <ProfileStep name={data.name} email={data.email} onChangeName={n => update({ name: n })} onChangeEmail={e => update({ email: e })}/>;
-      case 'parentDetails':
-        return <ParentDetailsStep parentName={data.parentName} parentPhone={data.parentPhone} onChangeName={n => update({ parentName: n })} onChangePhone={p => update({ parentPhone: p })} errors={errors}/>;
       case 'institution':
         return <InstitutionStep institutionName={data.institutionName} onChange={n => update({ institutionName: n })}/>;
       case 'parentOtp':
-        return <PhoneOtpStep phone={data.parentPhone} name={data.parentName} label="Parent's phone" onSuccess={handleOtpSuccess}/>;
+        return <PhoneOtpStep label="Parent's mobile number" onSuccess={handleOtpSuccess}/>;
       case 'teacherOtp':
         return <PhoneOtpStep label="Your phone number" onSuccess={handleOtpSuccess}/>;
       default:
@@ -123,7 +121,7 @@ export default function OnboardingWizard() {
               onClick={next}
               sx={{ py: 1.5, borderRadius: 2, fontWeight: 700 }}
             >
-              {currentStepId === 'parentDetails' ? 'Send OTP to Parent' : 'Continue'}
+              Continue
             </Button>
             {canSkip && (
               <Button variant="text" fullWidth onClick={skip} sx={{ color: 'text.secondary', fontSize: 13 }}>
