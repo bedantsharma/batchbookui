@@ -24,7 +24,10 @@ export default function StudentRoute({ children }) {
   const [restoreResult, setRestoreResult] = useState(null); // 'ok' | 'incomplete' | 'failed' | null
 
   useEffect(() => {
-    if (loading || !session || role === 'student') return;
+    if (loading || !session || role === 'student') {
+      setRestoring(false);
+      return;
+    }
     let cancelled = false;
     setRestoring(true);
     api.get('/parent/me')
