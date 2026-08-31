@@ -31,13 +31,24 @@ const T = {
 /**
  * MarkAttendanceSheet
  *
- * Renders a list of students for a session with PRESENT/ABSENT toggles.
- * On submit, sends the marked attendance to the backend.
+ * Renders one row per attendance record for this session, with PRESENT/ABSENT
+ * toggles. On submit, sends the marked attendance to the backend.
+ *
+ * The session's roster (who appears, and the present/absent counts) comes
+ * from `initialAttendance` — the rows actually persisted for this session —
+ * not from `enrollments`, the batch's *current* active-enrollment list.
+ * Those two can diverge: a session's attendance rows are frozen to whoever
+ * was actively enrolled when the session was created, while `enrollments`
+ * keeps changing as students join/leave the batch. Rendering off the live
+ * enrollment list made an older session's roster silently drift from its
+ * actual attendance records — showing the wrong students, wrong checkmarks,
+ * and present/absent counts that didn't add up to the true class size.
+ * `enrollments` is only used here to look up display names.
  *
  * Props:
  *   sessionId       - ClassSession ID
- *   enrollments     - list of { id, student_id, student_name? } from the parent
- *   initialAttendance - existing attendance rows (AttendanceResponse[]) or []
+ *   enrollments     - list of { id, student_id, student_name? } from the parent (name lookup only)
+ *   initialAttendance - existing attendance rows (AttendanceResponse[]) for this session — the roster
  *   onSubmitted     - callback(attendanceRows) after successful submission
  */
 export default function MarkAttendanceSheet({
@@ -46,16 +57,17 @@ export default function MarkAttendanceSheet({
   initialAttendance,
   onSubmitted,
 }) {
-  // Build initial set of present enrollment IDs from existing attendance rows
-  const initialPresent = new Set(
-    (initialAttendance || [])
-      .filter((r) => r.status === 'PRESENT')
-      .map((r) => r.enrollment_id)
-  );
+  const roster = initialAttendance || [];
 
-  const [presentIds, setPresentIds] = useState(initialPresent);
+  function presentIdsFrom(rows) {
+    return new Set(rows.filter((r) => r.status === 'PRESENT').map((r) => r.enrollment_id));
+  }
+
+  const [presentIds, setPresentIds] = useState(() => presentIdsFrom(roster));
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState({ open: false, message: '', severity: 'success' });
+
+  const enrollmentById = new Map(enrollments.map((e) => [e.id, e]));
 
   function toggleStudent(enrollmentId) {
     setPresentIds((prev) => {
@@ -73,10 +85,15 @@ export default function MarkAttendanceSheet({
     setSubmitting(true);
     try {
       const rows = await markAttendance(sessionId, [...presentIds]);
+      const presentCount = rows.filter((r) => r.status === 'PRESENT').length;
       const absentCount = rows.filter((r) => r.status === 'ABSENT').length;
+      // Resync from the server's response (the source of truth) rather than
+      // trusting whatever was locally toggled — a toggled ID that has no
+      // attendance row for this session is silently ignored server-side.
+      setPresentIds(presentIdsFrom(rows));
       setToast({
         open: true,
-        message: `Attendance saved! ${presentIds.size} present, ${absentCount} absent.`,
+        message: `Attendance saved! ${presentCount} present, ${absentCount} absent.`,
         severity: 'success',
       });
       if (onSubmitted) onSubmitted(rows);
@@ -88,7 +105,7 @@ export default function MarkAttendanceSheet({
   }
 
   const presentCount = presentIds.size;
-  const totalCount = enrollments.length;
+  const totalCount = roster.length;
 
   return (
     <Box>
@@ -127,7 +144,7 @@ export default function MarkAttendanceSheet({
           variant="text"
           size="small"
           sx={{ fontFamily: T.sans, color: T.fg2, fontSize: 12 }}
-          onClick={() => setPresentIds(new Set(enrollments.map((e) => e.id)))}
+          onClick={() => setPresentIds(new Set(roster.map((r) => r.enrollment_id)))}
         >
           Mark All Present
         </Button>
@@ -136,18 +153,19 @@ export default function MarkAttendanceSheet({
       <Divider sx={{ borderColor: T.outline, mb: 2 }} />
 
       {/* Student list */}
-      {enrollments.length === 0 ? (
+      {roster.length === 0 ? (
         <Typography sx={{ color: T.fg3, fontFamily: T.sans, fontSize: 14, textAlign: 'center', py: 4 }}>
-          No active enrollments in this batch.
+          No students were enrolled when this session was created.
         </Typography>
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 3 }}>
-          {enrollments.map((enrollment) => {
-            const isPresent = presentIds.has(enrollment.id);
+          {roster.map((row) => {
+            const enrollment = enrollmentById.get(row.enrollment_id);
+            const isPresent = presentIds.has(row.enrollment_id);
             return (
               <Box
-                key={enrollment.id}
-                onClick={() => toggleStudent(enrollment.id)}
+                key={row.enrollment_id}
+                onClick={() => toggleStudent(row.enrollment_id)}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -169,7 +187,7 @@ export default function MarkAttendanceSheet({
                 }}
               >
                 <Typography sx={{ fontFamily: T.sans, fontSize: 14, color: T.fg1 }}>
-                  {enrollment.student_name ?? `Student #${enrollment.student_id}`}
+                  {enrollment?.student_name ?? `Enrollment #${row.enrollment_id}`}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                   {isPresent ? (
@@ -199,7 +217,7 @@ export default function MarkAttendanceSheet({
       <Button
         variant="contained"
         fullWidth
-        disabled={submitting || enrollments.length === 0}
+        disabled={submitting || roster.length === 0}
         onClick={handleSubmit}
         sx={{
           bgcolor: T.primary,

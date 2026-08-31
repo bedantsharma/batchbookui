@@ -66,4 +66,31 @@ describe('PhoneOtpStep — name in verify_otp body', () => {
       expect(body.name).toBeUndefined();
     });
   });
+
+  it('calls onSuccess with parentName and children from the verify response', async () => {
+    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        auth_token: 'tok',
+        refresh_token: 'ref',
+        parent_name: 'Priya Devi',
+        children: [{ id: 1, name: 'Kid', email: null, fees_status: 'NOT_PAID' }],
+      }),
+    });
+
+    const onSuccess = vi.fn();
+    render(<PhoneOtpStep phone="9876543210" label="Parent's phone" onSuccess={onSuccess} />);
+
+    await waitFor(() => expect(screen.getByLabelText(/6-digit otp/i)).toBeInTheDocument());
+    fireEvent.change(screen.getByLabelText(/6-digit otp/i), { target: { value: '111111' } });
+    fireEvent.click(screen.getByRole('button', { name: /verify/i }));
+
+    await waitFor(() => {
+      expect(onSuccess).toHaveBeenCalledWith('9876543210', {
+        parentName: 'Priya Devi',
+        children: [{ id: 1, name: 'Kid', email: null, fees_status: 'NOT_PAID' }],
+      });
+    });
+  });
 });

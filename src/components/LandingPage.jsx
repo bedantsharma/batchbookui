@@ -1,7 +1,14 @@
 // src/components/LandingPage.jsx
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
+import { IndianRupee, ClipboardCheck, TrendingUp } from 'lucide-react';
+import ParticleField from './landing/ParticleField';
+import CursorGlow from './landing/CursorGlow';
+import MagneticButton from './landing/MagneticButton';
+import TiltCard from './landing/TiltCard';
+import Reveal from './landing/Reveal';
+import { useReveal } from './landing/useReveal';
 
 const T = {
   bg:      '#121212',
@@ -24,17 +31,17 @@ function LogoMark({ size = 24 }) {
 
 const FEATURES = [
   {
-    icon: '₹',
+    Icon: IndianRupee,
     title: 'Fee Management',
     desc: 'See who has paid, send reminders, and collect UPI payments — all from your phone. No more chasing parents on WhatsApp.',
   },
   {
-    icon: '✓',
+    Icon: ClipboardCheck,
     title: 'Attendance',
     desc: 'Mark an entire batch present or absent in under 30 seconds. Parents get an automatic alert when their child is absent.',
   },
   {
-    icon: '📊',
+    Icon: TrendingUp,
     title: 'Test Scores',
     desc: 'Record scores after every test. BatchBook flags students whose average drops below 60% so no one slips through the cracks.',
   },
@@ -45,6 +52,21 @@ const STEPS = [
   { n: '2', label: 'Add students',   desc: 'Create your batches and add students. Takes about 2 minutes.' },
   { n: '3', label: 'Start managing', desc: 'Mark attendance, collect fees, track test scores — all from your phone.' },
 ];
+
+const COMPARISON = {
+  old: [
+    'Fee status scattered across payment-app screenshots and WhatsApp threads',
+    'Attendance called out loud, then copied into a paper register by hand',
+    "No way to tell a student's grades are slipping until the next test",
+    'Parents messaging you one by one to ask if their child showed up',
+  ],
+  new: [
+    'One dashboard shows exactly who has paid and who is due',
+    'Attendance for a full batch, marked in under 30 seconds',
+    "Automatic flag the moment a student's average drops below 60%",
+    'Parents get the update automatically — no one-off messages',
+  ],
+};
 
 function CTAButton({ onClick, children }) {
   return (
@@ -74,11 +96,21 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const goToOnboarding = () => navigate('/onboarding');
 
+  const featuresGridRef = useRef(null);
+  useReveal(featuresGridRef, { stagger: 0.15 });
+
+  const comparisonRef = useRef(null);
+  useReveal(comparisonRef, { stagger: 0.12 });
+
+  const stepsGridRef = useRef(null);
+  useReveal(stepsGridRef, { stagger: 0.15 });
+
   return (
-    <Box sx={{ bgcolor: T.bg, minHeight: '100vh', fontFamily: T.sans, color: T.fg1 }}>
+    <Box sx={{ bgcolor: T.bg, minHeight: '100vh', fontFamily: T.sans, color: T.fg1, position: 'relative' }}>
+      <CursorGlow />
 
       {/* ── Nav ───────────────────────────────────────────────── */}
-      <Box sx={{ px: { xs: 2.5, sm: 5 }, py: 2, display: 'flex', alignItems: 'center', gap: 1.5, borderBottom: `1px solid ${T.outline}` }}>
+      <Box sx={{ px: { xs: 2.5, sm: 5 }, py: 2, display: 'flex', alignItems: 'center', gap: 1.5, borderBottom: `1px solid ${T.outline}`, position: 'relative', zIndex: 1 }}>
         <LogoMark size={22} />
         <Typography sx={{ fontWeight: 700, fontSize: 16, color: T.fg1, fontFamily: T.sans }}>BatchBook</Typography>
         <Box sx={{ flex: 1 }} />
@@ -93,60 +125,146 @@ export default function LandingPage() {
       </Box>
 
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <Box sx={{ px: { xs: 2.5, sm: 5 }, pt: { xs: 8, sm: 12 }, pb: { xs: 6, sm: 10 }, maxWidth: 740, mx: 'auto', textAlign: 'center' }}>
-        <Box sx={{ display: 'inline-block', bgcolor: 'rgba(187,134,252,0.12)', border: `1px solid rgba(187,134,252,0.25)`, borderRadius: '20px', px: 2, py: 0.5, mb: 3 }}>
-          <Typography sx={{ fontSize: 11, color: T.primary, fontFamily: T.sans, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-            For coaching institutes
-          </Typography>
-        </Box>
-
-        <Typography
-          component="h1"
-          sx={{ fontSize: { xs: 32, sm: 46 }, fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.025em', color: T.fg1, fontFamily: T.sans, mb: 2.5 }}
+      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+        <ParticleField />
+        <Reveal
+          stagger={0.12}
+          style={{ position: 'relative', zIndex: 1 }}
         >
-          Run your coaching institute from your phone
-        </Typography>
+          <Box sx={{ px: { xs: 2.5, sm: 5 }, pt: { xs: 8, sm: 12 }, maxWidth: 740, mx: 'auto', textAlign: 'center' }}>
+            <Box sx={{ display: 'inline-block', bgcolor: 'rgba(187,134,252,0.12)', border: `1px solid rgba(187,134,252,0.25)`, borderRadius: '20px', px: 2, py: 0.5, mb: 3 }}>
+              <Typography sx={{ fontSize: 11, color: T.primary, fontFamily: T.sans, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                For coaching institutes
+              </Typography>
+            </Box>
+          </Box>
 
-        <Typography sx={{ fontSize: { xs: 15, sm: 18 }, color: T.fg2, lineHeight: 1.7, fontFamily: T.sans, mb: 5, maxWidth: 580, mx: 'auto' }}>
-          Fees, attendance, and test scores — all in one place. Built for solo teachers who spend 8+ hours a week on admin work that software can do in seconds.
-        </Typography>
+          <Typography
+            component="h1"
+            sx={{ px: { xs: 2.5, sm: 5 }, maxWidth: 740, mx: 'auto', fontSize: { xs: 32, sm: 46 }, fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.025em', color: T.fg1, fontFamily: T.sans, mb: 2.5, textAlign: 'center' }}
+          >
+            Run your coaching institute from your phone
+          </Typography>
 
-        <CTAButton onClick={goToOnboarding}>Get Started Free</CTAButton>
-        <Typography sx={{ fontSize: 12, color: T.fg3, mt: 1.5, fontFamily: T.sans }}>No credit card required</Typography>
+          <Typography sx={{ px: { xs: 2.5, sm: 5 }, fontSize: { xs: 15, sm: 18 }, color: T.fg2, lineHeight: 1.7, fontFamily: T.sans, mb: 5, maxWidth: 580, mx: 'auto', textAlign: 'center' }}>
+            Fees, attendance, and test scores — all in one place. Built for solo teachers who spend 8+ hours a week on admin work that software can do in seconds.
+          </Typography>
+
+          <Box sx={{ textAlign: 'center', pb: { xs: 6, sm: 10 } }}>
+            <MagneticButton>
+              <CTAButton onClick={goToOnboarding}>Get Started Free</CTAButton>
+            </MagneticButton>
+            <Typography sx={{ fontSize: 12, color: T.fg3, mt: 1.5, fontFamily: T.sans }}>No credit card required</Typography>
+          </Box>
+        </Reveal>
       </Box>
 
       {/* ── Social proof strip ────────────────────────────────── */}
-      <Box sx={{ textAlign: 'center', pb: 8 }}>
+      <Box sx={{ textAlign: 'center', pb: 8, position: 'relative', zIndex: 1 }}>
         <Typography sx={{ fontSize: 13, color: T.fg3, fontFamily: T.sans }}>
           Join <strong style={{ color: T.fg2 }}>50+ coaching institutes</strong> already using BatchBook
         </Typography>
       </Box>
 
       {/* ── Features ──────────────────────────────────────────── */}
-      <Box sx={{ px: { xs: 2.5, sm: 5 }, pb: { xs: 10, sm: 14 }, maxWidth: 1000, mx: 'auto' }}>
+      <Box sx={{ px: { xs: 2.5, sm: 5 }, pb: { xs: 10, sm: 14 }, maxWidth: 1000, mx: 'auto', position: 'relative', zIndex: 1 }}>
         <Typography sx={{ fontSize: { xs: 24, sm: 30 }, fontWeight: 700, textAlign: 'center', mb: 6, fontFamily: T.sans }}>
           Everything you need, nothing you don't
         </Typography>
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 2.5 }}>
+        <Box ref={featuresGridRef} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 2.5 }}>
           {FEATURES.map(f => (
-            <Box key={f.title} sx={{ bgcolor: T.surface, borderRadius: '16px', p: 3.5, border: `1px solid ${T.outline}` }}>
-              <Box sx={{ width: 46, height: 46, borderRadius: '12px', bgcolor: 'rgba(187,134,252,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, mb: 2.5 }}>
-                {f.icon}
+            <TiltCard
+              key={f.title}
+              sx={{
+                position: 'relative',
+                overflow: 'hidden',
+                background: `linear-gradient(165deg, ${T.surface} 0%, #171717 100%)`,
+                borderRadius: '18px',
+                p: 3.5,
+                border: `1px solid ${T.outline}`,
+                transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                  borderColor: 'rgba(187,134,252,0.35)',
+                  boxShadow: '0 20px 40px -12px rgba(187,134,252,0.25)',
+                },
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '2px',
+                  background: `linear-gradient(90deg, transparent, ${T.primary}, transparent)`,
+                  opacity: 0.6,
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  width: 52,
+                  height: 52,
+                  borderRadius: '14px',
+                  background: 'linear-gradient(155deg, rgba(187,134,252,0.22) 0%, rgba(187,134,252,0.06) 100%)',
+                  border: '1px solid rgba(187,134,252,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mb: 2.5,
+                }}
+              >
+                <f.Icon size={24} strokeWidth={1.75} color={T.primary} />
               </Box>
-              <Typography sx={{ fontSize: 16, fontWeight: 700, color: T.fg1, fontFamily: T.sans, mb: 1 }}>{f.title}</Typography>
+              <Typography sx={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.01em', color: T.fg1, fontFamily: T.sans, mb: 1 }}>{f.title}</Typography>
               <Typography sx={{ fontSize: 13, color: T.fg2, fontFamily: T.sans, lineHeight: 1.65 }}>{f.desc}</Typography>
-            </Box>
+            </TiltCard>
           ))}
         </Box>
       </Box>
 
+      {/* ── Old way vs BatchBook ──────────────────────────────── */}
+      <Box sx={{ bgcolor: T.surface, py: { xs: 10, sm: 14 }, px: { xs: 2.5, sm: 5 }, borderTop: `1px solid ${T.outline}`, borderBottom: `1px solid ${T.outline}`, position: 'relative', zIndex: 1 }}>
+        <Box sx={{ maxWidth: 900, mx: 'auto' }}>
+          <Typography sx={{ fontSize: { xs: 24, sm: 30 }, fontWeight: 700, textAlign: 'center', mb: 6, fontFamily: T.sans }}>
+            Still running your institute over WhatsApp and Excel?
+          </Typography>
+          <Box ref={comparisonRef} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: { xs: 3, sm: 4 } }}>
+            <Box sx={{ bgcolor: T.bg, borderRadius: '16px', p: 3.5, border: `1px solid ${T.outline}` }}>
+              <Typography sx={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: T.fg3, fontFamily: T.sans, mb: 2.5 }}>
+                The old way
+              </Typography>
+              <Box component="ul" sx={{ m: 0, p: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 1.75 }}>
+                {COMPARISON.old.map(line => (
+                  <Box component="li" key={line} sx={{ display: 'flex', gap: 1.25, fontSize: 13.5, color: T.fg2, fontFamily: T.sans, lineHeight: 1.6 }}>
+                    <span style={{ color: T.fg3 }}>✕</span>
+                    {line}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box sx={{ bgcolor: T.bg, borderRadius: '16px', p: 3.5, border: `1px solid rgba(187,134,252,0.3)` }}>
+              <Typography sx={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: T.primary, fontFamily: T.sans, mb: 2.5 }}>
+                With BatchBook
+              </Typography>
+              <Box component="ul" sx={{ m: 0, p: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 1.75 }}>
+                {COMPARISON.new.map(line => (
+                  <Box component="li" key={line} sx={{ display: 'flex', gap: 1.25, fontSize: 13.5, color: T.fg1, fontFamily: T.sans, lineHeight: 1.6 }}>
+                    <span style={{ color: T.primary }}>✓</span>
+                    {line}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+
       {/* ── How it works ──────────────────────────────────────── */}
-      <Box sx={{ bgcolor: T.surface, py: { xs: 10, sm: 14 }, px: { xs: 2.5, sm: 5 }, borderTop: `1px solid ${T.outline}`, borderBottom: `1px solid ${T.outline}` }}>
+      <Box sx={{ py: { xs: 10, sm: 14 }, px: { xs: 2.5, sm: 5 }, position: 'relative', zIndex: 1 }}>
         <Box sx={{ maxWidth: 760, mx: 'auto', textAlign: 'center' }}>
           <Typography sx={{ fontSize: { xs: 24, sm: 30 }, fontWeight: 700, mb: 7, fontFamily: T.sans }}>
             Up and running in 5 minutes
           </Typography>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 4 }}>
+          <Box ref={stepsGridRef} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 4 }}>
             {STEPS.map(s => (
               <Box key={s.n} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
                 <Box sx={{ width: 44, height: 44, borderRadius: '50%', bgcolor: T.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 800, color: '#1a1a1a', fontFamily: T.sans, flexShrink: 0 }}>
@@ -158,13 +276,15 @@ export default function LandingPage() {
             ))}
           </Box>
           <Box sx={{ mt: 7 }}>
-            <CTAButton onClick={goToOnboarding}>Start for free</CTAButton>
+            <MagneticButton>
+              <CTAButton onClick={goToOnboarding}>Start for free</CTAButton>
+            </MagneticButton>
           </Box>
         </Box>
       </Box>
 
       {/* ── Footer ────────────────────────────────────────────── */}
-      <Box sx={{ px: { xs: 2.5, sm: 5 }, py: 4 }}>
+      <Box sx={{ px: { xs: 2.5, sm: 5 }, py: 4, position: 'relative', zIndex: 1 }}>
         <Box sx={{ maxWidth: 1000, mx: 'auto', display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', gap: 2, justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <LogoMark size={16} />

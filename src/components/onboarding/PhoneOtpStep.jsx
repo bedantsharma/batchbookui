@@ -67,7 +67,7 @@ export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone 
         body: JSON.stringify(name ? { phone, token: otp, name } : { phone, token: otp }),
       });
       if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || `Error ${res.status}`); }
-      const { auth_token, refresh_token, children = [] } = await res.json();
+      const { auth_token, refresh_token, parent_name, children = [] } = await res.json();
 
       // Bridge the backend Supabase JWT into the Supabase JS client.
       // AuthContext will pick up the session via onAuthStateChange.
@@ -84,7 +84,7 @@ export default function PhoneOtpStep({ phone: initialPhone = '', label = 'Phone 
         localStorage.setItem('bb_student_name', children[0].name ?? '');
       }
 
-      onSuccess(phone);
+      onSuccess(phone, { parentName: parent_name, children });
     } catch (err) {
       setError('OTP verification failed: ' + err.message);
     } finally {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -19,10 +19,29 @@ import PhoneLogin from './components/PhoneLogin';
 import PaymentSuccess from './components/PaymentSuccess';
 import OtpVerification from './components/OtpVerification';
 import OnboardingWizard from './components/onboarding/OnboardingWizard';
+import CompleteProfileStep from './components/onboarding/CompleteProfileStep';
 import JoinInstitute from './components/onboarding/JoinInstitute';
 import StudentDashboard from './components/student/StudentDashboard';
 import OwnerDashboard from './pages/owner/OwnerDashboard';
 import OwnerSetup from './pages/owner/OwnerSetup';
+
+function CompleteProfilePage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { missing, childId } = location.state || {};
+  if (!missing) return <Navigate to="/dashboard/student" replace />;
+  return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: 'background.default', p: 2 }}>
+      <Box sx={{ width: '100%', maxWidth: 460, p: 4, borderRadius: 4, boxShadow: 3, bgcolor: 'background.paper' }}>
+        <CompleteProfileStep
+          missing={missing}
+          childId={childId}
+          onDone={() => navigate('/dashboard/student', { replace: true })}
+        />
+      </Box>
+    </Box>
+  );
+}
 
 const darkTheme = createTheme({
   palette: {
@@ -78,6 +97,10 @@ function App() {
             <Route
               path="/dashboard/student"
               element={<StudentRoute><StudentDashboard /></StudentRoute>}
+            />
+            <Route
+              path="/complete-profile"
+              element={<StudentRoute><CompleteProfilePage /></StudentRoute>}
             />
 
             {/* ── Teacher — coming soon (no auth required) ─────── */}
