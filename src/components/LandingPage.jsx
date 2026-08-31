@@ -2,6 +2,7 @@
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
+import { IndianRupee, ClipboardCheck, TrendingUp } from 'lucide-react';
 import ParticleField from './landing/ParticleField';
 import CursorGlow from './landing/CursorGlow';
 import MagneticButton from './landing/MagneticButton';
@@ -30,17 +31,17 @@ function LogoMark({ size = 24 }) {
 
 const FEATURES = [
   {
-    icon: '₹',
+    Icon: IndianRupee,
     title: 'Fee Management',
     desc: 'See who has paid, send reminders, and collect UPI payments — all from your phone. No more chasing parents on WhatsApp.',
   },
   {
-    icon: '✓',
+    Icon: ClipboardCheck,
     title: 'Attendance',
     desc: 'Mark an entire batch present or absent in under 30 seconds. Parents get an automatic alert when their child is absent.',
   },
   {
-    icon: '📊',
+    Icon: TrendingUp,
     title: 'Test Scores',
     desc: 'Record scores after every test. BatchBook flags students whose average drops below 60% so no one slips through the cracks.',
   },
@@ -172,11 +173,48 @@ export default function LandingPage() {
         </Typography>
         <Box ref={featuresGridRef} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 2.5 }}>
           {FEATURES.map(f => (
-            <TiltCard key={f.title} sx={{ bgcolor: T.surface, borderRadius: '16px', p: 3.5, border: `1px solid ${T.outline}` }}>
-              <Box sx={{ width: 46, height: 46, borderRadius: '12px', bgcolor: 'rgba(187,134,252,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, mb: 2.5 }}>
-                {f.icon}
+            <TiltCard
+              key={f.title}
+              sx={{
+                position: 'relative',
+                overflow: 'hidden',
+                background: `linear-gradient(165deg, ${T.surface} 0%, #171717 100%)`,
+                borderRadius: '18px',
+                p: 3.5,
+                border: `1px solid ${T.outline}`,
+                transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                  borderColor: 'rgba(187,134,252,0.35)',
+                  boxShadow: '0 20px 40px -12px rgba(187,134,252,0.25)',
+                },
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '2px',
+                  background: `linear-gradient(90deg, transparent, ${T.primary}, transparent)`,
+                  opacity: 0.6,
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  width: 52,
+                  height: 52,
+                  borderRadius: '14px',
+                  background: 'linear-gradient(155deg, rgba(187,134,252,0.22) 0%, rgba(187,134,252,0.06) 100%)',
+                  border: '1px solid rgba(187,134,252,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mb: 2.5,
+                }}
+              >
+                <f.Icon size={24} strokeWidth={1.75} color={T.primary} />
               </Box>
-              <Typography sx={{ fontSize: 16, fontWeight: 700, color: T.fg1, fontFamily: T.sans, mb: 1 }}>{f.title}</Typography>
+              <Typography sx={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.01em', color: T.fg1, fontFamily: T.sans, mb: 1 }}>{f.title}</Typography>
               <Typography sx={{ fontSize: 13, color: T.fg2, fontFamily: T.sans, lineHeight: 1.65 }}>{f.desc}</Typography>
             </TiltCard>
           ))}
