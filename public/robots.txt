@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Allow: /privacy-policy
+
+# Authenticated app screens — nothing here is useful to index, and crawling
+# them wastes crawl budget on a new, low-authority domain.
+Disallow: /owner/
+Disallow: /dashboard/
+Disallow: /onboarding
+Disallow: /join/
+Disallow: /phone-login
+Disallow: /otp-verification
+Disallow: /payment-success
+
+Sitemap: https://batchbook.in/sitemap.xml
